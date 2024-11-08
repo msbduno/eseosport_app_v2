@@ -1,0 +1,11 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.lib.flutter_blue_plus" > <!-- This file must be here to fix build errors in Flutter V2 -->
+4    <!--
+5 But we intentionally leave this blank because android bluetooth permissions are
+6     complicated and always changing. By leaving this blank, users can set exactly the 
+7     permissions they want, without having to 'undo' the permissions we set here
+8    -->
+9    <uses-sdk android:minSdkVersion="21" />
+10
+11</manifest>
