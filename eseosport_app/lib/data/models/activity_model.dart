@@ -26,7 +26,11 @@ class Activity {
 
 
   void updateComment(String newComment) {
-    comment = newComment;
+    if (comment == null) {
+      comment = newComment;
+    } else {
+      throw Exception('Field \'comment\' has already been initialized.');
+    }
   }
 
   // Méthode pour convertir l'objet Activity en JSON

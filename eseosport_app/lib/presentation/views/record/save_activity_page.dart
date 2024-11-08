@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/activity_model.dart';
+import '../../viewmodels/activity_viewmodel.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
 
 class SaveActivityPage extends StatefulWidget {
@@ -26,9 +28,9 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
     final Activity activity = ModalRoute.of(context)!.settings.arguments as Activity;
 
     Future<void> saveActivity() async {
-      //final activityViewModel = Provider.of<ActivityViewModel>(context, listen: false);
-      //activity.updateComment(_commentController.text); // Update the comment
-      //await activityViewModel.saveActivity(activity);
+      final activityViewModel = Provider.of<ActivityViewModel>(context, listen: false);
+      activity.updateComment(_commentController.text); // Update the comment
+      await activityViewModel.saveActivity(activity);
       if (!mounted) return; // Ensure the widget is still in the widget tree
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -29,9 +29,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ActivityViewModel(ActivityRepository()),
         ),
-        ChangeNotifierProvider(
-          create: (context) => MockActivityViewModel(),
-        ),
+
         ChangeNotifierProvider(
             create: (context) => AuthViewModel(AuthRepository())),
       ],

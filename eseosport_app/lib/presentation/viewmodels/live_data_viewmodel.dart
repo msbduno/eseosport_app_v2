@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../../data/models/data_point_model.dart';
+import '../../data/models/data_model.dart';
 import '../../data/repositories/bluetooth_repository.dart';
-
 
 class LiveDataViewModel extends ChangeNotifier {
   final BluetoothRepository _bluetoothRepository;
   DataPointModel _currentData = DataPointModel(
     timestamp: DateTime.now(),
     vitesse: 0.0,
-    activiteId: 0, // Vous devrez gérer cet ID selon votre logique
   );
   bool isInitialized = false;
 
@@ -21,9 +19,10 @@ class LiveDataViewModel extends ChangeNotifier {
   int? get currentBPM => _currentData.bpm;
   DateTime get timestamp => _currentData.timestamp;
 
+
   Future<void> initialize() async {
     if (!isInitialized) {
-      // Initialisez ici votre configuration Bluetooth si nécessaire
+      // Initialize your Bluetooth configuration here if necessary
       isInitialized = true;
       notifyListeners();
     }
@@ -41,27 +40,28 @@ class LiveDataViewModel extends ChangeNotifier {
   }
 
   void _updateDataFromBluetooth(List<int> data) {
-    try {
-      // Convertir les données brutes en String
-      String jsonString = String.fromCharCodes(data);
+  try {
+    // Convert raw data to String
+    String jsonString = String.fromCharCodes(data);
 
-      // Ajoutez ce print pour vérifier le contenu du JSON reçu
-      print('Données reçues : $jsonString'); // <--- Ligne à ajouter ici
+    // Print to check received JSON content
+    print('Received data: $jsonString');
 
-      // Parser le JSON
-      Map<String, dynamic> jsonData = json.decode(jsonString);
+    // Parse JSON
+    Map<String, dynamic> jsonData = json.decode(jsonString);
 
-      // Mettre à jour le timestamp
-      jsonData['timestamp'] = DateTime.now().toIso8601String();
+    // Manually set the timestamp and activiteId
+    jsonData['timestamp'] = _currentData.timestamp.toIso8601String();
 
-      // Créer un nouvel objet DataPointModel
-      _currentData = DataPointModel.fromMap(jsonData);
+    // Create a new DataPointModel object
+    _currentData = DataPointModel.fromMap(jsonData);
 
-      // Notifier les écouteurs du changement
-      notifyListeners();
-    } catch (e) {
-      print('Erreur lors du parsing des données: $e');
-    }
+
+
+    // Notify listeners of the change
+    notifyListeners();
+  } catch (e) {
+    print('Error parsing data: $e');
   }
-
+}
 }

@@ -8,7 +8,7 @@ class ActivitiesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activityViewModel = Provider.of<MockActivityViewModel>(context);
+    final activityViewModel = Provider.of<ActivityViewModel>(context);
 
     return Scaffold(
       appBar: AppBar(

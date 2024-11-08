@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/activity_model.dart';
 
 class ActivityRepository {
-  final String apiUrl = 'http://your-spring-api-url/activities'; // Replace with your API URL
+  final String apiUrl = 'http://localhost:8080/postgres';
 
   Future<void> saveActivity(Activity activity) async {
     final response = await http.post(
