@@ -4,6 +4,7 @@ import 'package:eseosport_app/presentation/views/activity/activities_page.dart';
 import 'package:eseosport_app/presentation/views/activity/no_activity_page.dart';
 import 'package:eseosport_app/presentation/views/auth/login_page.dart';
 import 'package:eseosport_app/presentation/views/auth/signIn_page.dart';
+import 'package:eseosport_app/presentation/views/profile/profile_details_page.dart';
 import 'package:eseosport_app/presentation/views/profile/profile_page.dart';
 import 'package:eseosport_app/presentation/views/record/record_page.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginPage(),
           '/signin': (context) => SignInPage(),
           '/profile': (context) => ProfilePage(),
+          '/profile2': (context) => Profile2Page(),
         },
       ),
     );

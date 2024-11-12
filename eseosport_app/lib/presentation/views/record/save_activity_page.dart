@@ -29,7 +29,7 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
 
     Future<void> saveActivity() async {
       final activityViewModel = Provider.of<ActivityViewModel>(context, listen: false);
-      activity.updateComment(_commentController.text); // Update the comment
+      //activity.updateComment(_commentController.text); // Update the comment
       await activityViewModel.saveActivity(activity);
       if (!mounted) return; // Ensure the widget is still in the widget tree
       WidgetsBinding.instance.addPostFrameCallback((_) {

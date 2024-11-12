@@ -8,42 +8,38 @@ class AuthViewModel extends ChangeNotifier {
   String? _errorMessage;
   UserModel? _user;
 
-  AuthViewModel(this._authRepository);
+  AuthViewModel(this._authRepository) {
+    _initializeUser();
+  }
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   UserModel? get user => _user;
 
-
+  Future<void> _initializeUser() async {
+    _user = await _authRepository.getCachedUser();
+    notifyListeners();
+  }
 
   Future<bool> login(String email, String password) async {
-  try {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    try {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
 
-    final user = await _authRepository.login(email, password);
-
-    if (user != null) {
-      _user = user;
+      _user = await _authRepository.login(email, password);
       notifyListeners();
       return true;
-    } else {
-      _errorMessage = 'Login failed: User not found';
+    } catch (e) {
+      _errorMessage = 'Login failed: ${e.toString()}';
       _user = null;
       notifyListeners();
       return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-  } catch (e) {
-    _errorMessage = 'Login failed: ${e.toString()}';
-    _user = null;
-    notifyListeners();
-    return false;
-  } finally {
-    _isLoading = false;
-    notifyListeners();
   }
-}
 
   Future<bool> register(UserModel newUser) async {
     try {
@@ -65,28 +61,10 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  void logout() {
+  Future<void> logout() async {
+    await _authRepository.clearUserData();
     _user = null;
     _errorMessage = null;
     notifyListeners();
-  }
-
-  Future<void> updateUser() async {
-    if (_user != null) {
-      try {
-        _isLoading = true;
-        notifyListeners();
-
-        final updatedUser = await _authRepository.getUserData(_user!.email);
-        _user = updatedUser;
-        notifyListeners();
-      } catch (e) {
-        _errorMessage = 'Failed to update user data: ${e.toString()}';
-        notifyListeners();
-      } finally {
-        _isLoading = false;
-        notifyListeners();
-      }
-    }
   }
 }

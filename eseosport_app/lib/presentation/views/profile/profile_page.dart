@@ -20,7 +20,6 @@ class ProfilePage extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            centerTitle: false,
             title: const Text(
               'Profile',
               style: TextStyle(
@@ -30,42 +29,72 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             backgroundColor: Colors.white,
+            elevation: 0,
           ),
           backgroundColor: Colors.white,
-          body: Center(
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Name: ${user.nom}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  'Surname: ${user.prenom}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  'Email: ${user.email}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.center,
-                ),
+              children: [
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                // Box profil utilisateur
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile2');
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.grey.shade100,
+                          child: const Icon(Icons.person_outline, color: Colors.grey),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          '${user.nom} ${user.prenom}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: const Text('Log Out'),
-                  onPressed: () {
-                    authViewModel.logout();
+                ),
+                const SizedBox(height: 12),
+                // Box déconnexion
+                InkWell(
+                  onTap: () async {
+                    await authViewModel.logout();
                     Navigator.pushReplacementNamed(context, '/signin');
                   },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.logout, color: Colors.grey),
+                        SizedBox(width: 12),
+                        Text(
+                          'Log Out',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
