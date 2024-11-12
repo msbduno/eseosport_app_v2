@@ -13,7 +13,7 @@ import java.util.Optional;
 public class ActivityService {
     private final ActivityRepository activityRepository;
 
-    public Activity createActivity(Activity activity) {
+    public Activity createActivity(Activity activity, Long userId) {
         return activityRepository.save(activity);
     }
 
@@ -43,4 +43,9 @@ public class ActivityService {
     public void deleteActivity(Long id) {
         activityRepository.deleteById(id);
     }
+        public List<Activity> getAllActivities() {
+            return activityRepository.findAll();
+        }
+
+
 }

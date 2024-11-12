@@ -3,6 +3,7 @@ package fr.eseo.api.backend.controller;
 import fr.eseo.api.backend.model.Activity;
 import fr.eseo.api.backend.service.ActivityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +13,13 @@ import java.util.List;
 @RequestMapping("/api/activities")
 @RequiredArgsConstructor
 public class ActivityController {
+
+    @Autowired
     private final ActivityService activityService;
 
     @PostMapping
-    public ResponseEntity<Activity> createActivity(@RequestBody Activity activity) {
-        return ResponseEntity.ok(activityService.createActivity(activity));
+    public Activity saveActivity(@RequestBody Activity activity, @RequestParam Long userId) {
+        return activityService.createActivity(activity, userId);
     }
 
     @GetMapping("/{id}")
@@ -29,6 +32,11 @@ public class ActivityController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Activity>> getActivitiesByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(activityService.getActivitiesByUserId(userId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Activity>> getActivities() {
+        return ResponseEntity.ok(activityService.getAllActivities());
     }
 
     @PutMapping("/{id}")

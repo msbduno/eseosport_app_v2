@@ -7,7 +7,7 @@ class ActivityRepository {
 
   Future<void> saveActivity(Activity activity) async {
     final response = await http.post(
-      Uri.parse('$apiUrl/save'),
+      Uri.parse('$apiUrl?userId=${activity.userId}'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -16,6 +16,7 @@ class ActivityRepository {
 
     if (response.statusCode != 200) {
       print('Failed to save activity: ${response.statusCode} ${response.body}');
+      print('Request payload: ${json.encode(activity.toJson())}');
       throw Exception('Failed to save activity');
     }
   }
