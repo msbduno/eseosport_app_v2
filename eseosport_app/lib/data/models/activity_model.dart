@@ -62,4 +62,31 @@ class Activity {
       comment: json['comment'],
     );
   }
+
+
+  Activity copyWith({
+    int? idActivity,
+    DateTime? date,
+    int? duration,
+    double? distance,
+    double? elevation,
+    double? averageSpeed,
+    int? averageBPM,
+    int? userId,
+    String? comment,
+    String? type,
+  }) {
+    return Activity(
+      idActivity: idActivity ?? this.idActivity,
+      date: date ?? this.date,
+      duration: duration ?? this.duration,
+      distance: distance ?? this.distance,
+      elevation: elevation ?? this.elevation,
+      averageSpeed: averageSpeed ?? this.averageSpeed,
+      averageBPM: averageBPM ?? this.averageBPM,
+      userId: userId ?? this.userId,
+      comment: comment ?? this.comment,
+    );
+  }
 }
+

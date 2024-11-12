@@ -17,6 +17,7 @@ import 'presentation/views/splash_screen.dart';
 import 'presentation/views/home_page.dart';
 import 'presentation/views/record/save_activity_page.dart';
 
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -28,14 +29,16 @@ class MyApp extends StatelessWidget {
           create: (context) => LiveDataViewModel(BluetoothRepository()),
         ),
         ChangeNotifierProvider(
-          create: (context) => ActivityViewModel(ActivityRepository()),
+          create: (context) => ActivityViewModel(
+            ActivityRepository(),
+            getCurrentUserId(context), // Pass the BuildContext here
+          ),
         ),
-
         ChangeNotifierProvider(
-            create: (context) => AuthViewModel(AuthRepository())),
+          create: (context) => AuthViewModel(AuthRepository()),
+        ),
       ],
       child: MaterialApp(
-
         title: 'ESEOSPORT',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
@@ -58,6 +61,11 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+}
+
+int getCurrentUserId(BuildContext context) {
+  final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+  return authViewModel.getCurrentUserId() ?? 0; // Default to 0 if user ID is null
 }
 
 void main() {

@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
 import '../../data/models/activity_model.dart';
 import '../../data/repositories/activity_repository.dart';
-
 class ActivityViewModel extends ChangeNotifier {
   final ActivityRepository _activityRepository;
   List<Activity> _activities = [];
   bool _isLoading = false;
   String? _errorMessage;
+  final int currentUserId;
 
-  ActivityViewModel(this._activityRepository) {
-    fetchActivities(); // Fetch activities when the ViewModel is created
+  ActivityViewModel(this._activityRepository, this.currentUserId) {
+    fetchUserActivities();
   }
 
   List<Activity> get activities => _activities;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetchActivities() async {
+  Future<void> fetchUserActivities() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
-      _activities = await _activityRepository.getActivities();
+      _activities = await _activityRepository.getActivitiesByUserId(currentUserId);
     } catch (e) {
-      _errorMessage = 'An error occurred while loading activities.';
+      _errorMessage = 'Erreur lors du chargement des activités.';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -31,14 +32,27 @@ class ActivityViewModel extends ChangeNotifier {
   }
 
   Future<void> saveActivity(Activity activity) async {
-    await _activityRepository.saveActivity(activity);
-    await fetchActivities(); // Update the list of activities
+    try {
+      activity = activity.copyWith(userId: currentUserId); // Assurer que l'ID utilisateur est défini
+      await _activityRepository.saveActivity(activity);
+      await fetchUserActivities(); // Recharger les activités après la sauvegarde
+    } catch (e) {
+      _errorMessage = 'Erreur lors de la sauvegarde de l\'activité.';
+      notifyListeners();
+      throw e;
+    }
   }
 
   Future<void> deleteActivity(int id) async {
-    await _activityRepository.deleteActivity(id);
-    _activities.removeWhere((activity) => activity.idActivity == id);
-    notifyListeners();
+    try {
+      await _activityRepository.deleteActivity(id);
+      _activities.removeWhere((activity) => activity.idActivity == id);
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Erreur lors de la suppression de l\'activité.';
+      notifyListeners();
+      throw e;
+    }
   }
 }
 /*class MockActivityViewModel extends ChangeNotifier {

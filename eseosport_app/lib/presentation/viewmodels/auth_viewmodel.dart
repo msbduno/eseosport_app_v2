@@ -15,6 +15,7 @@ class AuthViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   UserModel? get user => _user;
+  int? getCurrentUserId() => _user?.id;
 
   Future<void> _initializeUser() async {
     _user = await _authRepository.getCachedUser();
