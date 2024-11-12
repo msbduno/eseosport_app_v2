@@ -8,19 +8,14 @@ class AuthRepository {
   Future<bool> login(String email, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('$apiUrl/login'),
+        Uri.parse('$apiUrl/users/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'email': email, 'password': password}),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        return responseData['success'];
+        return true;
       } else {
-        print('Login failed: ${response.body}');
         return false;
       }
     } catch (e) {
@@ -29,16 +24,36 @@ class AuthRepository {
     }
   }
 
+  Future<UserModel> getUserData(String email) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$apiUrl/users?email=$email'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        if (data.isNotEmpty) {
+          return UserModel.fromMap(data[0]);
+        } else {
+          throw Exception('User not found');
+        }
+      } else {
+        throw Exception('Failed to load user data');
+      }
+    } catch (e) {
+      print('Get user data error: $e');
+      throw e;
+    }
+  }
+
   Future<bool> register(UserModel user) async {
     try {
       final response = await http.post(
-        Uri.parse('$apiUrl/register'),
+        Uri.parse('$apiUrl/users/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(user.toMap()),
       );
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       return response.statusCode == 201;
     } catch (e) {

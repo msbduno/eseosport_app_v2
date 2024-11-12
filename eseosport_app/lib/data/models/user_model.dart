@@ -3,12 +3,14 @@ class UserModel {
   final String nom;
   final String prenom;
   final String email;
+  final String password;
 
   UserModel({
     this.id,
     required this.nom,
     required this.prenom,
     required this.email,
+    required this.password,
   });
 
   // Méthode pour convertir un UserModel en Map, pour l'insertion dans la base de données
@@ -18,6 +20,7 @@ class UserModel {
       'nom': nom,
       'prenom': prenom,
       'email': email,
+      'password': password,
     };
   }
 
@@ -28,6 +31,7 @@ class UserModel {
       nom: map['nom'],
       prenom: map['prenom'],
       email: map['email'],
+      password: map['password'],
     );
   }
 }

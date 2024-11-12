@@ -12,22 +12,31 @@ class AuthViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> login(String email, String password) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+  UserModel? _user;
 
+  UserModel? get user => _user;
+
+  void setUser(UserModel? user) {
+    _user = user;
+    notifyListeners();
+  }
+
+  Future<bool> login(String email, String password) async {
     try {
       bool success = await _authRepository.login(email, password);
-      if (!success) {
-        _errorMessage = 'Login failed. Please check your credentials.';
+      if (success) {
+        _user = await _authRepository.getUserData(email);
+        _user = user;
+        _errorMessage = null;
+      } else {
+        _errorMessage = 'Failed to login. Please check your credentials.';
       }
+      notifyListeners(); // Assurez-vous que notifyListeners() est appelé ici
+      return success;
     } catch (e) {
-      _errorMessage = 'An error occurred: $e';
-      print('Login error: $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      _errorMessage = 'An error occurred during login.';
+      notifyListeners(); // Assurez-vous que notifyListeners() est appelé ici
+      return false;
     }
   }
 
@@ -38,7 +47,10 @@ class AuthViewModel extends ChangeNotifier {
 
     try {
       bool success = await _authRepository.register(user);
-      if (!success) {
+      if (success) {
+        _user = user; // Set the user data after successful registration
+        _errorMessage = null;
+      } else {
         _errorMessage = 'Registration failed. Please try again.';
       }
     } catch (e) {
@@ -46,7 +58,7 @@ class AuthViewModel extends ChangeNotifier {
       print('Registration error: $e');
     } finally {
       _isLoading = false;
-      notifyListeners();
+      notifyListeners(); // Assurez-vous que notifyListeners() est appelé ici
     }
   }
 }

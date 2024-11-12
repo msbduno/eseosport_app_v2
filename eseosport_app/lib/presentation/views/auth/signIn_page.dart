@@ -106,25 +106,25 @@ class SignInPage extends StatelessWidget {
                     ),
                     child: const Text('Sign In'),
                     onPressed: () async {
-                      await authViewModel.login(
-                        _emailController.text,
-                        _passwordController.text,
-                      );
-                      if (authViewModel.errorMessage == null) {
-                        Navigator.pushReplacementNamed(context, '/home');
-                      } else {
-                        // Handle error
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: const Text(
-                            'Failed to login. Please check your credentials.',
-                            style: TextStyle(color: AppTheme.backgroundColor),
-                          ),
-                            backgroundColor: AppTheme.primaryColor,
-                          ),
-                        );
-                        Navigator.pushReplacementNamed(context, '/home');
-                      }
-                    },
+  bool loginSuccess = await authViewModel.login(
+    _emailController.text,
+    _passwordController.text,
+  );
+  if (loginSuccess) {
+    Navigator.pushReplacementNamed(context, '/home');
+  } else {
+    // Handle error
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Failed to login. Please check your credentials.',
+          style: TextStyle(color: AppTheme.backgroundColor),
+        ),
+        backgroundColor: AppTheme.primaryColor,
+      ),
+    );
+  }
+},
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

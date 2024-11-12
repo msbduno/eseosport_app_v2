@@ -1,3 +1,4 @@
+import 'package:eseosport_app/data/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
@@ -103,11 +104,15 @@ class LoginPage extends StatelessWidget {
                     ),
                     child: const Text('Sign Up'),
                     onPressed: () async {
-                      await authViewModel.register(
-                        _nameController.text,
-                        _surnameController.text,
-                        _emailController.text,
-                        _passwordController.text,
+
+                      UserModel user = UserModel(
+                        nom: _nameController.text,
+                        prenom: _surnameController.text,
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                      );
+
+                      await authViewModel.register(user
                       );
                       if (authViewModel.errorMessage == null) {
                         Navigator.pushReplacementNamed(context, '/home');
