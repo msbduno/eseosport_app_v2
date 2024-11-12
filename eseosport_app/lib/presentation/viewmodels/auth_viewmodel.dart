@@ -6,59 +6,87 @@ class AuthViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
   bool _isLoading = false;
   String? _errorMessage;
+  UserModel? _user;
 
   AuthViewModel(this._authRepository);
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-
-  UserModel? _user;
-
   UserModel? get user => _user;
 
-  void setUser(UserModel? user) {
-    _user = user;
-    notifyListeners();
-  }
+
 
   Future<bool> login(String email, String password) async {
-    try {
-      bool success = await _authRepository.login(email, password);
-      if (success) {
-        _user = await _authRepository.getUserData(email);
-        _user = user;
-        _errorMessage = null;
-      } else {
-        _errorMessage = 'Failed to login. Please check your credentials.';
-      }
-      notifyListeners(); // Assurez-vous que notifyListeners() est appelé ici
-      return success;
-    } catch (e) {
-      _errorMessage = 'An error occurred during login.';
-      notifyListeners(); // Assurez-vous que notifyListeners() est appelé ici
-      return false;
-    }
-  }
-
-  Future<void> register(UserModel user) async {
+  try {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
+    final user = await _authRepository.login(email, password);
+
+    if (user != null) {
+      _user = user;
+      notifyListeners();
+      return true;
+    } else {
+      _errorMessage = 'Login failed: User not found';
+      _user = null;
+      notifyListeners();
+      return false;
+    }
+  } catch (e) {
+    _errorMessage = 'Login failed: ${e.toString()}';
+    _user = null;
+    notifyListeners();
+    return false;
+  } finally {
+    _isLoading = false;
+    notifyListeners();
+  }
+}
+
+  Future<bool> register(UserModel newUser) async {
     try {
-      bool success = await _authRepository.register(user);
-      if (success) {
-        _user = user; // Set the user data after successful registration
-        _errorMessage = null;
-      } else {
-        _errorMessage = 'Registration failed. Please try again.';
-      }
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+
+      _user = await _authRepository.register(newUser);
+      notifyListeners();
+      return true;
     } catch (e) {
-      _errorMessage = 'An error occurred: $e';
-      print('Registration error: $e');
+      _errorMessage = 'Registration failed: ${e.toString()}';
+      _user = null;
+      notifyListeners();
+      return false;
     } finally {
       _isLoading = false;
-      notifyListeners(); // Assurez-vous que notifyListeners() est appelé ici
+      notifyListeners();
+    }
+  }
+
+  void logout() {
+    _user = null;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+  Future<void> updateUser() async {
+    if (_user != null) {
+      try {
+        _isLoading = true;
+        notifyListeners();
+
+        final updatedUser = await _authRepository.getUserData(_user!.email);
+        _user = updatedUser;
+        notifyListeners();
+      } catch (e) {
+        _errorMessage = 'Failed to update user data: ${e.toString()}';
+        notifyListeners();
+      } finally {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 }

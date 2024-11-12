@@ -3,7 +3,6 @@ package fr.eseo.api.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -16,17 +15,14 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String nom;
 
     @Column(nullable = false)
-    private String surname;
+    private String prenom;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String password;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Activity> activities;
 }

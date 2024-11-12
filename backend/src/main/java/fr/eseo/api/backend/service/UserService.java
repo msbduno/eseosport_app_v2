@@ -32,8 +32,8 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        user.setName(userDetails.getName());
-        user.setSurname(userDetails.getSurname());
+        user.setNom(userDetails.getNom());
+        user.setPrenom(userDetails.getPrenom());
         user.setEmail(userDetails.getEmail());
         user.setPassword(userDetails.getPassword());
 
@@ -43,4 +43,11 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+        public Optional<User> verifyUser(String email, String password) {
+            return userRepository.findByEmail(email)
+                    .filter(user -> user.getPassword().equals(password));
+        }
+
+
 }
