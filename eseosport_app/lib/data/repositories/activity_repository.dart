@@ -5,23 +5,30 @@ import '../models/activity_model.dart';
 class ActivityRepository {
   final String apiUrl = 'http://10.0.2.2:8080/api/activities';
 
+
   Future<void> saveActivity(Activity activity) async {
     try {
-      final response = await http.post(
-        Uri.parse('$apiUrl?userId=${activity.userId}'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(activity.toJson()),
-      );
+      // Assurez-vous que l'userId est converti en String
+       final response = await http.post(Uri.parse('$apiUrl?userId=${activity.userId}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+         body: json.encode(activity.toJson()),
+    );
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != 200 && response.statusCode != 201) {
         print('Échec de la sauvegarde: ${response.statusCode} ${response.body}');
         throw Exception('Échec de la sauvegarde de l\'activité');
-      }
-    } catch (e) {
-      print('Erreur lors de la sauvegarde: $e');
-      throw Exception('Erreur de connexion au serveur');
-    }
+       }
+  } catch (e) {
+  print('Erreur lors de la sauvegarde: $e');
+  throw Exception('Erreur de connexion au serveur');
   }
+}
+
+
+
 
   Future<List<Activity>> getActivitiesByUserId(int userId) async {
     try {

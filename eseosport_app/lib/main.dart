@@ -26,16 +26,21 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => LiveDataViewModel(BluetoothRepository()),
+          create: (_) => AuthViewModel(AuthRepository()),
         ),
-        ChangeNotifierProvider(
+        ChangeNotifierProxyProvider<AuthViewModel, ActivityViewModel>(
           create: (context) => ActivityViewModel(
             ActivityRepository(),
-            getCurrentUserId(context), // Pass the BuildContext here
+            context.read<AuthViewModel>().getCurrentUserId() ?? 0,
           ),
+          update: (context, authViewModel, previousActivityViewModel) =>
+              ActivityViewModel(
+                ActivityRepository(),
+                authViewModel.getCurrentUserId() ?? 0,
+              ),
         ),
         ChangeNotifierProvider(
-          create: (context) => AuthViewModel(AuthRepository()),
+          create: (_) => LiveDataViewModel(BluetoothRepository()),
         ),
       ],
       child: MaterialApp(
@@ -63,10 +68,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-int getCurrentUserId(BuildContext context) {
-  final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-  return authViewModel.getCurrentUserId() ?? 0; // Default to 0 if user ID is null
-}
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

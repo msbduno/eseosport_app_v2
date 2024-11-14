@@ -3,13 +3,15 @@ import '../../data/models/activity_model.dart';
 import '../../data/repositories/activity_repository.dart';
 class ActivityViewModel extends ChangeNotifier {
   final ActivityRepository _activityRepository;
+  final int currentUserId;
   List<Activity> _activities = [];
   bool _isLoading = false;
   String? _errorMessage;
-  final int currentUserId;
 
   ActivityViewModel(this._activityRepository, this.currentUserId) {
-    fetchUserActivities();
+    if (currentUserId != 0) {
+      fetchUserActivities();
+    }
   }
 
   List<Activity> get activities => _activities;
@@ -24,7 +26,8 @@ class ActivityViewModel extends ChangeNotifier {
     try {
       _activities = await _activityRepository.getActivitiesByUserId(currentUserId);
     } catch (e) {
-      _errorMessage = 'Erreur lors du chargement des activités.';
+      _errorMessage = 'Error loading activities: $e';
+      print(_errorMessage); // Print the error message to the console
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -33,11 +36,12 @@ class ActivityViewModel extends ChangeNotifier {
 
   Future<void> saveActivity(Activity activity) async {
     try {
-      activity = activity.copyWith(userId: currentUserId); // Assurer que l'ID utilisateur est défini
+      activity = activity.copyWith(userId: currentUserId); // Ensure the user ID is set
       await _activityRepository.saveActivity(activity);
-      await fetchUserActivities(); // Recharger les activités après la sauvegarde
+      await fetchUserActivities(); // Reload activities after saving
     } catch (e) {
-      _errorMessage = 'Erreur lors de la sauvegarde de l\'activité.';
+      _errorMessage = 'Error saving activity: $e';
+      print(_errorMessage); // Print the error message to the console
       notifyListeners();
       throw e;
     }
@@ -49,7 +53,8 @@ class ActivityViewModel extends ChangeNotifier {
       _activities.removeWhere((activity) => activity.idActivity == id);
       notifyListeners();
     } catch (e) {
-      _errorMessage = 'Erreur lors de la suppression de l\'activité.';
+      _errorMessage = 'Error deleting activity: $e';
+      print(_errorMessage); // Print the error message to the console
       notifyListeners();
       throw e;
     }

@@ -30,43 +30,38 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
     setState(() => _isSaving = true);
 
     try {
-      final activityViewModel = Provider.of<ActivityViewModel>(context, listen: false);
-
-      // Mettre à jour l'activité avec le type et le commentaire
-      final updatedActivity = activity.copyWith(
-        type: _selectedActivity,
+      final activityViewModel = context.read<ActivityViewModel>();
+      final updatedActivity = Activity(
+        idActivity: activity.idActivity,
+        date: DateTime.now(),
+        duration: activity.duration,
+        distance: activity.distance,
+        elevation: activity.elevation,
+        averageSpeed: activity.averageSpeed,
+        averageBPM: activity.averageBPM,
         comment: _commentController.text.trim(),
+        userId: activityViewModel.currentUserId,
       );
 
       await activityViewModel.saveActivity(updatedActivity);
 
       if (!mounted) return;
 
-      // Afficher le message de succès
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Activité enregistrée avec succès!',
-            style: TextStyle(color: AppTheme.backgroundColor),
-          ),
+          content: Text('Activité enregistrée avec succès!'),
           backgroundColor: AppTheme.primaryColor,
           duration: Duration(seconds: 2),
         ),
       );
 
-      // Rediriger vers la page des activités
       Navigator.pushReplacementNamed(context, '/activities');
-
     } catch (e) {
       if (!mounted) return;
 
-      // Afficher le message d'erreur
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Erreur lors de la sauvegarde: ${e.toString()}',
-            style: const TextStyle(color: Colors.white),
-          ),
+          content: Text('Erreur lors de la sauvegarde: ${e.toString()}'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),

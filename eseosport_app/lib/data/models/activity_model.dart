@@ -1,7 +1,5 @@
-// models/activity_model.dart
-
 class Activity {
-  final int idActivity;
+  final int? idActivity;  // Nullable car il sera null lors de la création
   final DateTime date;
   final int duration;
   final double distance;
@@ -9,11 +7,10 @@ class Activity {
   final double averageSpeed;
   final int averageBPM;
   final int userId;
-  late final String? comment;
-
+  String? comment;
 
   Activity({
-    required this.idActivity,
+    this.idActivity,
     required this.date,
     required this.duration,
     required this.distance,
@@ -24,26 +21,19 @@ class Activity {
     this.comment,
   });
 
-
-  void updateComment(String newComment) {
-    if (comment == null) {
-      comment = newComment;
-    } else {
-      throw Exception('Field \'comment\' has already been initialized.');
-    }
-  }
-
   // Méthode pour convertir l'objet Activity en JSON
   Map<String, dynamic> toJson() {
     return {
-      'id_activity': idActivity,
+      'idActivity': idActivity,  // Changé de 'id_activity' à 'idActivity' pour correspondre au backend
       'date': date.toIso8601String(),
       'duration': duration,
       'distance': distance,
       'elevation': elevation,
       'averageSpeed': averageSpeed,
       'averageBPM': averageBPM,
-      'userId': userId,
+      'user': {  // Ajout de l'objet user pour correspondre à la structure du backend
+        'id': userId
+      },
       'comment': comment,
     };
   }
@@ -51,18 +41,17 @@ class Activity {
   // Méthode pour créer un objet Activity à partir de JSON
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
-      idActivity: json['id_activity'],
+      idActivity: json['idActivity'],  // Changé de 'id_activity' à 'idActivity'
       date: DateTime.parse(json['date']),
       duration: json['duration'],
-      distance: json['distance'],
-      elevation: json['elevation'],
-      averageSpeed: json['averageSpeed'],
+      distance: json['distance'].toDouble(),
+      elevation: json['elevation'].toDouble(),
+      averageSpeed: json['averageSpeed'].toDouble(),
       averageBPM: json['averageBPM'],
-      userId: json['userId'],
+      userId: json['user']['id'],  // Extraction de l'ID utilisateur de l'objet user
       comment: json['comment'],
     );
   }
-
 
   Activity copyWith({
     int? idActivity,
@@ -74,7 +63,6 @@ class Activity {
     int? averageBPM,
     int? userId,
     String? comment,
-    String? type,
   }) {
     return Activity(
       idActivity: idActivity ?? this.idActivity,
@@ -89,4 +77,3 @@ class Activity {
     );
   }
 }
-

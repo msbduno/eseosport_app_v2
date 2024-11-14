@@ -160,8 +160,12 @@ class ActivitiesPage extends StatelessWidget {
                       child: IconButton(
                         icon: const Icon(Icons.close, color: Colors.red, size: 20),
                         onPressed: () {
-                          activityViewModel.deleteActivity(activity.idActivity);
-                        },
+  if (activity.idActivity != null) {
+    activityViewModel.deleteActivity(activity.idActivity!);
+  } else {
+    // Handle the case where idActivity is null
+  }
+},
                       ),
                     ),
                   ],
