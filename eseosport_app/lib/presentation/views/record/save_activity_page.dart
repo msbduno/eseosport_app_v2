@@ -31,6 +31,12 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
 
     try {
       final activityViewModel = context.read<ActivityViewModel>();
+      print('Current user ID: ${activityViewModel.currentUserId}'); // Log pour déboguer
+
+      if (activityViewModel.currentUserId <= 0) {
+        throw Exception('User not authenticated');
+      }
+
       final updatedActivity = Activity(
         idActivity: activity.idActivity,
         date: DateTime.now(),
@@ -41,6 +47,7 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
         averageBPM: activity.averageBPM,
         comment: _commentController.text.trim(),
         userId: activityViewModel.currentUserId,
+        activityType: _selectedActivity,
       );
 
       await activityViewModel.saveActivity(updatedActivity);
@@ -59,9 +66,14 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
     } catch (e) {
       if (!mounted) return;
 
+      String errorMessage = 'Erreur lors de la sauvegarde';
+      if (e.toString().contains('User not authenticated')) {
+        errorMessage = 'Utilisateur non connecté';
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur lors de la sauvegarde: ${e.toString()}'),
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),

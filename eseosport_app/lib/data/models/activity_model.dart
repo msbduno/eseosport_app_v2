@@ -1,58 +1,29 @@
 class Activity {
-  final int? idActivity;  // Nullable car il sera null lors de la création
+  final int idActivity;
   final DateTime date;
   final int duration;
   final double distance;
   final double elevation;
   final double averageSpeed;
   final int averageBPM;
+  final String? comment;
   final int userId;
-  String? comment;
+  final String activityType; // Nouveau champ
 
   Activity({
-    this.idActivity,
+    required this.idActivity,
     required this.date,
     required this.duration,
     required this.distance,
     required this.elevation,
     required this.averageSpeed,
     required this.averageBPM,
-    required this.userId,
     this.comment,
+    required this.userId,
+    this.activityType = 'Bike', // Valeur par défaut
   });
 
-  // Méthode pour convertir l'objet Activity en JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'idActivity': idActivity,  // Changé de 'id_activity' à 'idActivity' pour correspondre au backend
-      'date': date.toIso8601String(),
-      'duration': duration,
-      'distance': distance,
-      'elevation': elevation,
-      'averageSpeed': averageSpeed,
-      'averageBPM': averageBPM,
-      'user': {  // Ajout de l'objet user pour correspondre à la structure du backend
-        'id': userId
-      },
-      'comment': comment,
-    };
-  }
-
-  // Méthode pour créer un objet Activity à partir de JSON
-  factory Activity.fromJson(Map<String, dynamic> json) {
-    return Activity(
-      idActivity: json['idActivity'],  // Changé de 'id_activity' à 'idActivity'
-      date: DateTime.parse(json['date']),
-      duration: json['duration'],
-      distance: json['distance'].toDouble(),
-      elevation: json['elevation'].toDouble(),
-      averageSpeed: json['averageSpeed'].toDouble(),
-      averageBPM: json['averageBPM'],
-      userId: json['user']['id'],  // Extraction de l'ID utilisateur de l'objet user
-      comment: json['comment'],
-    );
-  }
-
+  // Mettez à jour la méthode copyWith
   Activity copyWith({
     int? idActivity,
     DateTime? date,
@@ -61,8 +32,9 @@ class Activity {
     double? elevation,
     double? averageSpeed,
     int? averageBPM,
-    int? userId,
     String? comment,
+    int? userId,
+    String? activityType,
   }) {
     return Activity(
       idActivity: idActivity ?? this.idActivity,
@@ -72,8 +44,41 @@ class Activity {
       elevation: elevation ?? this.elevation,
       averageSpeed: averageSpeed ?? this.averageSpeed,
       averageBPM: averageBPM ?? this.averageBPM,
-      userId: userId ?? this.userId,
       comment: comment ?? this.comment,
+      userId: userId ?? this.userId,
+      activityType: activityType ?? this.activityType,
+    );
+  }
+
+  // Mettez à jour toJson
+  Map<String, dynamic> toJson() {
+    return {
+      'idActivity': idActivity,
+      'date': date.toIso8601String(),
+      'duration': duration,
+      'distance': distance,
+      'elevation': elevation,
+      'averageSpeed': averageSpeed,
+      'averageBPM': averageBPM,
+      'comment': comment,
+      'userId': userId,
+      'activityType': activityType,
+    };
+  }
+
+  // Mettez à jour fromJson
+  factory Activity.fromJson(Map<String, dynamic> json) {
+    return Activity(
+      idActivity: json['idActivity'] as int,
+      date: DateTime.parse(json['date']),
+      duration: json['duration'] as int,
+      distance: json['distance'] as double,
+      elevation: json['elevation'] as double,
+      averageSpeed: json['averageSpeed'] as double,
+      averageBPM: json['averageBPM'] as int,
+      comment: json['comment'],
+      userId: json['userId'] as int,
+      activityType: json['activityType'] as String? ?? 'Bike',
     );
   }
 }

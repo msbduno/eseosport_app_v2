@@ -1,33 +1,61 @@
 import 'package:flutter/material.dart';
 import '../../data/models/activity_model.dart';
 import '../../data/repositories/activity_repository.dart';
+import '../../data/repositories/auth_repository.dart';
+
 class ActivityViewModel extends ChangeNotifier {
   final ActivityRepository _activityRepository;
-  final int currentUserId;
+  final AuthRepository _authRepository;
+  int? _currentUserId ;
   List<Activity> _activities = [];
   bool _isLoading = false;
   String? _errorMessage;
 
-  ActivityViewModel(this._activityRepository, this.currentUserId) {
-    if (currentUserId != 0) {
-      fetchUserActivities();
+  ActivityViewModel(this._activityRepository, this._authRepository) {
+    _initializeUser();
+  }
+
+  int get currentUserId {
+    if (_currentUserId == null || _currentUserId! <= 0) {
+      throw Exception('User not authenticated');
     }
+    return _currentUserId!;
   }
 
   List<Activity> get activities => _activities;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  Future<void> _initializeUser() async {
+    try {
+      _currentUserId = await _authRepository.getCachedUserId();
+      if (_currentUserId != null) {
+        await fetchUserActivities();
+      } else {
+        throw Exception('No authenticated user found');
+      }
+    } catch (e) {
+      _errorMessage = 'Error initializing user: $e';
+      notifyListeners();
+    }
+  }
+
   Future<void> fetchUserActivities() async {
+    if (_currentUserId == null) {
+      _errorMessage = 'User not authenticated';
+      notifyListeners();
+      return;
+    }
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _activities = await _activityRepository.getActivitiesByUserId(currentUserId);
+      _activities = await _activityRepository.getActivitiesByUserId(_currentUserId!);
     } catch (e) {
       _errorMessage = 'Error loading activities: $e';
-      print(_errorMessage); // Print the error message to the console
+      print(_errorMessage);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -36,12 +64,17 @@ class ActivityViewModel extends ChangeNotifier {
 
   Future<void> saveActivity(Activity activity) async {
     try {
-      activity = activity.copyWith(userId: currentUserId); // Ensure the user ID is set
+      if (_currentUserId == null || _currentUserId! <= 0) {
+        throw Exception('User not authenticated');
+      }
+
+      print('Saving activity for user: $_currentUserId'); // Log pour déboguer
+      activity = activity.copyWith(userId: _currentUserId);
       await _activityRepository.saveActivity(activity);
-      await fetchUserActivities(); // Reload activities after saving
+      await fetchUserActivities();
     } catch (e) {
       _errorMessage = 'Error saving activity: $e';
-      print(_errorMessage); // Print the error message to the console
+      print(_errorMessage);
       notifyListeners();
       throw e;
     }
@@ -54,7 +87,7 @@ class ActivityViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _errorMessage = 'Error deleting activity: $e';
-      print(_errorMessage); // Print the error message to the console
+      print(_errorMessage);
       notifyListeners();
       throw e;
     }

@@ -8,25 +8,39 @@ class ActivityRepository {
 
   Future<void> saveActivity(Activity activity) async {
     try {
-      // Assurez-vous que l'userId est converti en String
-       final response = await http.post(Uri.parse('$apiUrl?userId=${activity.userId}'),
+      final Map<String, dynamic> activityJson = activity.toJson();
+      activityJson['userId'] = activity.userId.toString();
+
+      // Ajout des logs avant l'envoi
+      print('Envoi de la requête avec les données : ${json.encode(activityJson)}');
+
+      final response = await http.post(
+        Uri.parse('$apiUrl?userId=${activity.userId}'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-         body: json.encode(activity.toJson()),
-    );
+        body: json.encode(activityJson),
+      );
+
+      // Ajout des logs après la réponse
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 403) {
+        print('Erreur d\'autorisation: ${response.body}');
+        throw Exception('Erreur d\'autorisation');
+      }
 
       if (response.statusCode != 200 && response.statusCode != 201) {
         print('Échec de la sauvegarde: ${response.statusCode} ${response.body}');
         throw Exception('Échec de la sauvegarde de l\'activité');
-       }
-  } catch (e) {
-  print('Erreur lors de la sauvegarde: $e');
-  throw Exception('Erreur de connexion au serveur');
+      }
+    } catch (e) {
+      print('Erreur lors de la sauvegarde: $e');
+      throw Exception('Erreur de connexion au serveur');
+    }
   }
-}
-
 
 
 

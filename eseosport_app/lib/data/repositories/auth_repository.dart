@@ -63,6 +63,11 @@ class AuthRepository {
     }
     return null;
   }
+  Future<int?> getCachedUserId() async {
+    final user = await getCachedUser();
+    return user?.id;
+  }
+
 
   Future<void> clearUserData() async {
     final prefs = await SharedPreferences.getInstance();

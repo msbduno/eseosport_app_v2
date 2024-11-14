@@ -28,16 +28,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => AuthViewModel(AuthRepository()),
         ),
-        ChangeNotifierProxyProvider<AuthViewModel, ActivityViewModel>(
+        Provider<AuthRepository>(
+          create: (_) => AuthRepository(),
+        ),
+        Provider<ActivityRepository>(
+          create: (_) => ActivityRepository(),
+        ),
+        ChangeNotifierProvider<ActivityViewModel>(
           create: (context) => ActivityViewModel(
-            ActivityRepository(),
-            context.read<AuthViewModel>().getCurrentUserId() ?? 0,
+            context.read<ActivityRepository>(),
+            context.read<AuthRepository>(),
           ),
-          update: (context, authViewModel, previousActivityViewModel) =>
-              ActivityViewModel(
-                ActivityRepository(),
-                authViewModel.getCurrentUserId() ?? 0,
-              ),
         ),
         ChangeNotifierProvider(
           create: (_) => LiveDataViewModel(BluetoothRepository()),
