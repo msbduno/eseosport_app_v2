@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../data/models/activity_model.dart';
 import '../../viewmodels/activity_viewmodel.dart';
 import '../../viewmodels/auth_viewmodel.dart';
@@ -26,8 +27,19 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Save Activity'),
+        title: const Text(
+          'Activity Details',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: false,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -41,25 +53,85 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                     _activityType = value;
                   });
                 },
-                items: ['Running', 'Cycling', 'Swimming']
+                items: ['Cycling', 'Running', 'Walking']
                     .map((type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(type),
-                        ))
+                  value: type,
+                  child: Text(type),
+                ))
                     .toList(),
-                decoration: InputDecoration(labelText: 'Activity Type'),
+                decoration: const InputDecoration(
+                  labelText: 'Activity Type',
+                  //add color primary to label text
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppTheme.primaryColor),
+                  ),
+                ),
                 validator: (value) => value == null ? 'Please select an activity type' : null,
               ),
+
+              // Informations de l'activité
+              const SizedBox(height: 30),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ListTile(
+                  title: Text(
+                    'Durée: ${widget.activity.duration} secondes\n'
+                        'Distance: ${widget.activity.distance} km\n'
+                        'Dénivelé: ${widget.activity.elevation} mètres',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Statistiques
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ListTile(
+                  title: Text(
+                    'Vitesse moyenne: ${widget.activity.averageSpeed} km/h\n'
+                        'Fréquence cardiaque moyenne: ${widget.activity.averageBPM} bpm',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Comment'),
+                decoration: const InputDecoration(
+                  labelText: 'Comment',
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppTheme.primaryColor),
+                  ),
+                ),
                 onChanged: (value) {
                   setState(() {
                     _comment = value;
                   });
                 },
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
+              const SizedBox(height: 200),
+              ElevatedButton(style: ElevatedButton.styleFrom(
+                foregroundColor: AppTheme.backgroundColor,
+                backgroundColor: AppTheme.primaryColor,
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                minimumSize: const Size(350, 40),),
   onPressed: () async {
     if (_formKey.currentState!.validate()) {
       if (authViewModel.user == null) {
@@ -92,5 +164,4 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
       ),
     );
   }
-
 }
