@@ -13,25 +13,23 @@ class UserModel {
     required this.password,
   });
 
-  // Méthode pour convertir un UserModel en Map, pour l'insertion dans la base de données
-  Map<String, dynamic> toMap() {
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'] as int?,
+      nom: json['nom'] as String,
+      prenom: json['prenom'] as String,
+      email: json['email'] as String,
+      password: json['password'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
     return {
-      'id_user': id,
+      'id': id,
       'nom': nom,
       'prenom': prenom,
       'email': email,
       'password': password,
     };
-  }
-
-  // Méthode pour créer un UserModel à partir d'une Map, pour la récupération depuis la base de données
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      id: map['id_user'],
-      nom: map['nom'],
-      prenom: map['prenom'],
-      email: map['email'],
-      password: map['password'],
-    );
   }
 }

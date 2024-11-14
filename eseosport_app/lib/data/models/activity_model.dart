@@ -1,3 +1,5 @@
+import 'package:eseosport_app/data/models/user_model.dart';
+
 class Activity {
   final int idActivity;
   final DateTime date;
@@ -7,8 +9,8 @@ class Activity {
   final double averageSpeed;
   final int averageBPM;
   final String? comment;
-  final int userId;
-  final String activityType; // Nouveau champ
+  late final UserModel? user;
+  final String activityType;
 
   Activity({
     required this.idActivity,
@@ -19,11 +21,10 @@ class Activity {
     required this.averageSpeed,
     required this.averageBPM,
     this.comment,
-    required this.userId,
-    this.activityType = 'Bike', // Valeur par défaut
+    required this.user,
+    this.activityType = 'Bike',
   });
 
-  // Mettez à jour la méthode copyWith
   Activity copyWith({
     int? idActivity,
     DateTime? date,
@@ -33,7 +34,7 @@ class Activity {
     double? averageSpeed,
     int? averageBPM,
     String? comment,
-    int? userId,
+    UserModel? user,
     String? activityType,
   }) {
     return Activity(
@@ -45,12 +46,11 @@ class Activity {
       averageSpeed: averageSpeed ?? this.averageSpeed,
       averageBPM: averageBPM ?? this.averageBPM,
       comment: comment ?? this.comment,
-      userId: userId ?? this.userId,
+      user: user ?? this.user,
       activityType: activityType ?? this.activityType,
     );
   }
 
-  // Mettez à jour toJson
   Map<String, dynamic> toJson() {
     return {
       'idActivity': idActivity,
@@ -61,12 +61,11 @@ class Activity {
       'averageSpeed': averageSpeed,
       'averageBPM': averageBPM,
       'comment': comment,
-      'userId': userId,
+      'user': user?.toJson(),
       'activityType': activityType,
     };
   }
 
-  // Mettez à jour fromJson
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
       idActivity: json['idActivity'] as int,
@@ -77,8 +76,8 @@ class Activity {
       averageSpeed: json['averageSpeed'] as double,
       averageBPM: json['averageBPM'] as int,
       comment: json['comment'],
-      userId: json['userId'] as int,
       activityType: json['activityType'] as String? ?? 'Bike',
+      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
     );
   }
 }

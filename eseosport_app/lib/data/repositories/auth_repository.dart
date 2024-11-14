@@ -16,7 +16,7 @@ class AuthRepository {
 
       if (loginResponse.statusCode == 200) {
         final userData = json.decode(loginResponse.body);
-        final user = UserModel.fromMap(userData);
+        final user = UserModel.fromJson(userData);
         // Sauvegarder les informations utilisateur
         await _saveUserData(user);
         return user;
@@ -33,12 +33,12 @@ class AuthRepository {
       final response = await http.post(
         Uri.parse('$apiUrl/users/register'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode(user.toMap()),
+        body: json.encode(user.toJson()),
       );
 
       if (response.statusCode == 201) {
         final userData = json.decode(response.body);
-        final createdUser = UserModel.fromMap(userData);
+        final createdUser = UserModel.fromJson(userData);
         // Sauvegarder les informations utilisateur
         await _saveUserData(createdUser);
         return createdUser;
@@ -50,23 +50,33 @@ class AuthRepository {
     }
   }
 
+
+  static const String _userKey = 'cached_user';
+
   Future<void> _saveUserData(UserModel user) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_data', json.encode(user.toMap()));
+    final userData = user.toJson();
+    await prefs.setString(_userKey, jsonEncode(userData));
   }
 
   Future<UserModel?> getCachedUser() async {
     final prefs = await SharedPreferences.getInstance();
-    final userData = prefs.getString('user_data');
+    final userData = prefs.getString(_userKey);
     if (userData != null) {
-      return UserModel.fromMap(json.decode(userData));
+      final Map<String, dynamic> userMap = jsonDecode(userData);
+      return UserModel.fromJson(userMap);
     }
     return null;
   }
   Future<int?> getCachedUserId() async {
+  try {
     final user = await getCachedUser();
     return user?.id;
+  } catch (e) {
+    print('Error retrieving cached user ID: $e');
+    return null;
   }
+}
 
 
   Future<void> clearUserData() async {

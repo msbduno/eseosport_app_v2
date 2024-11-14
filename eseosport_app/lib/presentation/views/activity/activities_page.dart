@@ -14,18 +14,18 @@ class ActivitiesPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        automaticallyImplyLeading: false, // Remove the back arrow
+        automaticallyImplyLeading: false,
         title: const Text(
-          'Activities', // Rename to Activities
+          'Activities',
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
-            fontWeight: FontWeight.w600, // Semi-bold
+            fontWeight: FontWeight.w600,
           ),
         ),
-        centerTitle: false, // Align to the left
+        centerTitle: false,
       ),
-      backgroundColor: Colors.white, // Set background color to white
+      backgroundColor: Colors.white,
       body: ListView.builder(
         itemCount: activityViewModel.activities.length,
         itemBuilder: (context, index) {
@@ -160,12 +160,12 @@ class ActivitiesPage extends StatelessWidget {
                       child: IconButton(
                         icon: const Icon(Icons.close, color: Colors.red, size: 20),
                         onPressed: () {
-  if (activity.idActivity != null) {
-    activityViewModel.deleteActivity(activity.idActivity!);
-  } else {
-    // Handle the case where idActivity is null
-  }
-},
+                          if (activity.idActivity != null) {
+                            activityViewModel.deleteActivity(activity.idActivity!);
+                          } else {
+                            // Handle the case where idActivity is null
+                          }
+                        },
                       ),
                     ),
                   ],
@@ -179,13 +179,12 @@ class ActivitiesPage extends StatelessWidget {
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 2,
-        //backgroundColor: Colors.white, // Set bottom navigation bar color to white
         onTap: (index) {
           if (index == 0) {
             Navigator.pushReplacementNamed(context, '/home');
           } else if (index == 1) {
             Navigator.pushReplacementNamed(context, '/record');
-          }else if (index == 3) {
+          } else if (index == 3) {
             Navigator.pushReplacementNamed(context, '/profile');
           }
         },

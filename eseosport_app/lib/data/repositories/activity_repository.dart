@@ -3,74 +3,66 @@ import 'package:http/http.dart' as http;
 import '../models/activity_model.dart';
 
 class ActivityRepository {
-  final String apiUrl = 'http://10.0.2.2:8080/api/activities';
-
+  final String apiUrl  = 'http://10.0.2.2:8080/api';
 
   Future<void> saveActivity(Activity activity) async {
-    try {
-      final Map<String, dynamic> activityJson = activity.toJson();
-      activityJson['userId'] = activity.userId.toString();
+    final url = Uri.parse('$apiUrl/activities');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(activity.toJson()),
+    );
 
-      // Ajout des logs avant l'envoi
-      print('Envoi de la requête avec les données : ${json.encode(activityJson)}');
-
-      final response = await http.post(
-        Uri.parse('$apiUrl?userId=${activity.userId}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: json.encode(activityJson),
-      );
-
-      // Ajout des logs après la réponse
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
-      if (response.statusCode == 403) {
-        print('Erreur d\'autorisation: ${response.body}');
-        throw Exception('Erreur d\'autorisation');
-      }
-
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        print('Échec de la sauvegarde: ${response.statusCode} ${response.body}');
-        throw Exception('Échec de la sauvegarde de l\'activité');
-      }
-    } catch (e) {
-      print('Erreur lors de la sauvegarde: $e');
-      throw Exception('Erreur de connexion au serveur');
+    if (response.statusCode == 201) {
+      // Activity saved successfully
+    } else {
+      _handleError(response);
     }
   }
 
-
-
   Future<List<Activity>> getActivitiesByUserId(int userId) async {
-    try {
-      final response = await http.get(Uri.parse('$apiUrl/user/$userId'));
+    final url = Uri.parse('$apiUrl/activities/user/$userId');
+    final response = await http.get(url);
 
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
-        return jsonData.map((json) => Activity.fromJson(json)).toList();
-      } else {
-        throw Exception('Échec du chargement des activités');
-      }
-    } catch (e) {
-      print('Erreur lors du chargement des activités: $e');
-      throw Exception('Erreur de connexion au serveur');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Activity.fromJson(json)).toList();
+    } else {
+      _handleError(response);
+      return [];
     }
   }
 
   Future<void> deleteActivity(int id) async {
-    try {
-      final response = await http.delete(Uri.parse('$apiUrl/$id'));
+    final url = Uri.parse('$apiUrl/activities/$id');
+    final response = await http.delete(url);
 
-      if (response.statusCode != 200) {
-        print('Échec de la suppression: ${response.statusCode} ${response.body}');
-        throw Exception('Échec de la suppression de l\'activité');
-      }
-    } catch (e) {
-      print('Erreur lors de la suppression: $e');
-      throw Exception('Erreur de connexion au serveur');
+    if (response.statusCode != 204) {
+      _handleError(response);
     }
+  }
+
+  void _handleError(http.Response response) {
+    String errorMessage;
+    switch (response.statusCode) {
+      case 400:
+        errorMessage = 'Bad request. Please check the data you are sending.';
+        break;
+      case 401:
+        errorMessage = 'Unauthorized. Please check your credentials.';
+        break;
+      case 403:
+        errorMessage = 'Forbidden. You do not have permission to perform this action.';
+        break;
+      case 404:
+        errorMessage = 'Not found. The requested resource could not be found.';
+        break;
+      case 500:
+        errorMessage = 'Internal server error. Please try again later.';
+        break;
+      default:
+        errorMessage = 'An unexpected error occurred. Please try again.';
+    }
+    throw Exception(errorMessage);
   }
 }

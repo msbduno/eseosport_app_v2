@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import '../../data/models/activity_model.dart';
+import '../../data/models/user_model.dart';
 import '../../data/repositories/activity_repository.dart';
 import '../../data/repositories/auth_repository.dart';
 
 class ActivityViewModel extends ChangeNotifier {
   final ActivityRepository _activityRepository;
   final AuthRepository _authRepository;
-  int? _currentUserId ;
+  int? _currentUserId;
   List<Activity> _activities = [];
   bool _isLoading = false;
   String? _errorMessage;
 
   ActivityViewModel(this._activityRepository, this._authRepository) {
     _initializeUser();
-  }
+    fetchUserActivities();
+ }
 
-  int get currentUserId {
-    if (_currentUserId == null || _currentUserId! <= 0) {
-      throw Exception('User not authenticated');
-    }
-    return _currentUserId!;
-  }
+
 
   List<Activity> get activities => _activities;
   bool get isLoading => _isLoading;
@@ -67,11 +64,10 @@ class ActivityViewModel extends ChangeNotifier {
       if (_currentUserId == null || _currentUserId! <= 0) {
         throw Exception('User not authenticated');
       }
-
-      print('Saving activity for user: $_currentUserId'); // Log pour déboguer
-      activity = activity.copyWith(userId: _currentUserId);
+      UserModel? user = await _authRepository.getCachedUser();
+      activity = activity.copyWith(user: user);
       await _activityRepository.saveActivity(activity);
-      await fetchUserActivities();
+      await fetchUserActivities(); // Update the list of activities
     } catch (e) {
       _errorMessage = 'Error saving activity: $e';
       print(_errorMessage);

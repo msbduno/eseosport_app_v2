@@ -9,6 +9,7 @@ import 'package:eseosport_app/presentation/views/profile/profile_page.dart';
 import 'package:eseosport_app/presentation/views/record/record_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'data/models/activity_model.dart';
 import 'data/repositories/activity_repository.dart';
 import 'data/repositories/auth_repository.dart';
 import 'data/repositories/bluetooth_repository.dart';
@@ -18,9 +19,14 @@ import 'presentation/views/home_page.dart';
 import 'presentation/views/record/save_activity_page.dart';
 
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> {
+  Activity? _currentActivity;
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -39,7 +45,9 @@ class MyApp extends StatelessWidget {
             context.read<ActivityRepository>(),
             context.read<AuthRepository>(),
           ),
+
         ),
+
         ChangeNotifierProvider(
           create: (_) => LiveDataViewModel(BluetoothRepository()),
         ),
@@ -57,12 +65,15 @@ class MyApp extends StatelessWidget {
           '/home': (context) => HomePage(),
           '/record': (context) => const RecordPage(),
           '/activity': (context) => NoActivityPage(),
-          '/saveActivity': (context) => const SaveActivityPage(),
+      '/saveActivity': (context) {
+      final activity = ModalRoute.of(context)!.settings.arguments as Activity;
+      return SaveActivityPage(activity: activity);
+      },
           '/activities': (context) => const ActivitiesPage(),
           '/login': (context) => LoginPage(),
           '/signin': (context) => SignInPage(),
           '/profile': (context) => ProfilePage(),
-          '/profile2': (context) => Profile2Page(),
+          '/profile2': (context) => const Profile2Page(),
         },
       ),
     );
