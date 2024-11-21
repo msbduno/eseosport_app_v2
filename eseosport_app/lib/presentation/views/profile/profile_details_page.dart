@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
 
@@ -58,7 +59,9 @@ class _Profile2PageState extends State<Profile2Page> {
             backgroundColor: Colors.white,
             elevation: 0,
           ),
-          body: SingleChildScrollView(
+          body: Container(
+            // add background color
+            color: Colors.white,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Form(
@@ -116,29 +119,26 @@ class _Profile2PageState extends State<Profile2Page> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: AppTheme.primaryColor,
+                            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            minimumSize: const Size(350, 40),
+                          ),
+                          child: const Text('Save changes'),
                         onPressed: () {
+                            Navigator.pushReplacementNamed(context, '/profile');
+                            /*
                           if (_formKey.currentState!.validate()) {
                             // TODO: Implement save changes logic
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Processing Data')),
                             );
-                          }
+                          }*/
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Save changes',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
                       ),
                     ),
                   ],
