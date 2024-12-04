@@ -4,7 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 
 class AuthRepository {
-  final String apiUrl = 'http://10.0.2.2:8080/api';
+  //final String apiUrl = 'http://localhost:8080/api';
+  //final String apiUrl  = 'http://10.0.2.2:8080/api';
+  final String apiUrl = 'http://192.168.0.23:8080/api';
 
   Future<UserModel> login(String email, String password) async {
     try {
@@ -13,7 +15,6 @@ class AuthRepository {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'email': email, 'password': password}),
       );
-
       if (loginResponse.statusCode == 200) {
         final userData = json.decode(loginResponse.body);
         final user = UserModel.fromJson(userData);

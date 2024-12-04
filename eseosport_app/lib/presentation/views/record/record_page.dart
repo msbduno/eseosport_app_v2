@@ -174,12 +174,10 @@ class _RecordPageState extends State<RecordPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (snapshot.data == null) {
-              return Center(child: Text('No user data available'));
+              return const Center(child: Text('No user data available'));
             } else {
               final user = snapshot.data!;
-              if (_currentActivity?.user == null) {
-                _currentActivity?.user = user;
-              }
+              _currentActivity?.user ??= user;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -199,8 +197,6 @@ class _RecordPageState extends State<RecordPage> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 10),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -224,8 +220,6 @@ class _RecordPageState extends State<RecordPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -239,7 +233,7 @@ class _RecordPageState extends State<RecordPage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(40.0),
+                        padding: const EdgeInsets.all(20.0),
                         child: buildDataColumn(
                           'BPM',
                           '${liveDataVM.currentBPM ?? "_ _"}',
@@ -249,7 +243,6 @@ class _RecordPageState extends State<RecordPage> {
                       ),
                     ],
                   ),
-                  const Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -271,7 +264,7 @@ class _RecordPageState extends State<RecordPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 70),
+
                 ],
               );
             }

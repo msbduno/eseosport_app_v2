@@ -3,7 +3,9 @@ import 'package:http/http.dart' as http;
 import '../models/activity_model.dart';
 
 class ActivityRepository {
-  final String apiUrl  = 'http://10.0.2.2:8080/api';
+  //final String apiUrl = 'http://localhost:8080/api';
+  //final String apiUrl  = 'http://10.0.2.2:8080/api';
+  final String apiUrl = 'http://192.168.0.23:8080/api';
 
   Future<void> saveActivity(Activity activity) async {
     final url = Uri.parse('$apiUrl/activities');
