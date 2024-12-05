@@ -3,9 +3,10 @@ import 'package:http/http.dart' as http;
 import '../models/activity_model.dart';
 
 class ActivityRepository {
-  //final String apiUrl = 'http://localhost:8080/api';
-  //final String apiUrl  = 'http://10.0.2.2:8080/api';
-  final String apiUrl = 'http://192.168.0.23:8080/api';
+  //final String apiUrl = 'http://localhost:8080/api';// For iOS simulator
+  //final String apiUrl  = 'http://10.0.2.2:8080/api';// For Android emulator
+  final String apiUrl = 'http://172.23.1.246:8080/api';  // For physical devices
+  // tcheck the ip address with :ipconfig getifaddr en0
 
   Future<void> saveActivity(Activity activity) async {
     final url = Uri.parse('$apiUrl/activities');

@@ -20,11 +20,12 @@ class ProfilePage extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
+            //mettre à gauche le texte
+            centerTitle: false,
             title: const Text(
               'Profile',
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),

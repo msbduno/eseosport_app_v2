@@ -249,7 +249,7 @@ class _RecordPageState extends State<RecordPage> {
                       CircleButton(
                         onPressed: _cancelActivity,
                         icon: Icons.close,
-                        color: AppTheme.primaryColor,
+                        color: Colors.grey,
                       ),
                       CircleButton(
                         onPressed: _toggleRecording,
@@ -259,8 +259,8 @@ class _RecordPageState extends State<RecordPage> {
                       ),
                       CircleButton(
                         onPressed: _saveActivityDetails,
-                        icon: Icons.more_horiz,
-                        color: Colors.grey,
+                        icon: Icons.arrow_forward_ios_outlined,
+                        color:  AppTheme.primaryColor,
                       ),
                     ],
                   ),

@@ -5,9 +5,10 @@ import '../../core/theme/app_theme.dart';
 
 Widget CircleButton({
   required VoidCallback onPressed,
-  required IconData icon,
+IconData ?icon,
   required Color color,
   double size = 50,
+
 }) {
   return Container(
     height: size,

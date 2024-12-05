@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:eseosport_app/presentation/viewmodels/activity_viewmodel.dart';
 import 'package:eseosport_app/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:eseosport_app/presentation/views/activity/activities_page.dart';
@@ -8,6 +9,7 @@ import 'package:eseosport_app/presentation/views/profile/profile_details_page.da
 import 'package:eseosport_app/presentation/views/profile/profile_page.dart';
 import 'package:eseosport_app/presentation/views/record/record_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:provider/provider.dart';
 import 'data/models/activity_model.dart';
 import 'data/repositories/activity_repository.dart';
@@ -82,7 +84,9 @@ class _MyAppState extends State<MyApp> {
 
 
 
-void main() {
+Future<void> main() async {
+  // Set the log level to none to disable logging
+  FlutterBluePlus.setLogLevel(LogLevel.none);
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }

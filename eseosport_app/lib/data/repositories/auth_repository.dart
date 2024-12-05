@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 
 class AuthRepository {
-  //final String apiUrl = 'http://localhost:8080/api';
-  //final String apiUrl  = 'http://10.0.2.2:8080/api';
-  final String apiUrl = 'http://192.168.0.23:8080/api';
+  //final String apiUrl = 'http://localhost:8080/api'; // For iOS simulator
+  //final String apiUrl  = 'http://10.0.2.2:8080/api'; // For Android emulator
+  final String apiUrl = 'http://172.23.1.246:8080/api'; // For physical devices
 
   Future<UserModel> login(String email, String password) async {
     try {

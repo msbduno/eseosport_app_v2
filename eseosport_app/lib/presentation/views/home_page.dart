@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../core/theme/app_theme.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
-import '../../../core/theme/app_theme.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set Scaffold background color to white
+      backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: <Widget>[
           const SliverAppBar(
             floating: true,
             snap: true,
             backgroundColor: Colors.white,
-            automaticallyImplyLeading: false, // Remove the back arrow
+            automaticallyImplyLeading: false,
             title: Text(
               'ESEOSPORT',
               style: TextStyle(
@@ -26,54 +28,69 @@ class HomePage extends StatelessWidget {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        'DESCRIPTION FIFE',
+                      const Text(
+                        'PFE DESCRIPTION',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Date de lancement : 16 septembre 2024',
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Launch date: September 16, 2024',
                         style: TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 50),
-                      Text(
-                        'Le projet ESEOSPORT est un projet  innovant conçu pour illustrer les compétences technologiques et les savoir-faire de l’ESEO regroupant électronique et informatique. Cette application propose une expérience immersive permettant aux utilisateurs d’explorer divers aspects d’un vélomobile et d évaluer leur performances physique. ',
+                      const SizedBox(height: 50),
+                      const Text(
+                        'The ESEOSPORT project is an innovative project designed to showcase the technological skills and expertise of ESEO, combining electronics and computer science. This application offers an immersive experience allowing users to explore various aspects of a velomobile and evaluate their physical performance.',
                         style: TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 40),
-                      Text(
-                        'Le projet ESEOSPORT fonctionne grâce à une collaboration entre plusieurs étudiants. Une équipe électronique installe et gère des capteurs sur le vélomobile, capturant des données clés comme la vitesse, le dénivelé et des informations physiologiques. ',
+                      const SizedBox(height: 40),
+                      Image.asset('assets/solution.png'),
+                      const SizedBox(height: 40),
+                      const Text(
+                        'The ESEOSPORT project operates through collaboration between several students. An electronics team installs and manages sensors on the velomobile, capturing key data such as speed, elevation, and physiological information.',
                         style: TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 40),
-                      Text(
-                        'Ces données sont ensuite transmises en temps réel à l’application via Bluetooth, permettant un affichage en direct des performances sur l’interface utilisateur.',
+                      const SizedBox(height: 40),
+                      Image.asset('assets/hardware.png'),
+                      const SizedBox(height: 40),
+                      const Text(
+                        'This data is then transmitted in real-time to the application via Bluetooth, allowing live display of performance on the user interface.',
                         style: TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 40),
-                      Text(
-                        'L’application enregistre également chaque parcours, offrant à l’utilisateur un historique complet pour analyser ses performances et suivre sa progression. Ce système crée une expérience de conduite connectée, interactive et optimisée.',
+                      const SizedBox(height: 40),
+                      Image.asset('assets/software.png'),
+                      const SizedBox(height: 40),
+                      const Text(
+                        'The application also records each route, providing the user with a complete history to analyze their performance and track their progress. This system creates a connected, interactive, and optimized driving experience.',
                         style: TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 40),
-                      Text(
-                        'En collaboration avec Cycles JV Fenioux, fabricant de vélomobiles, ce projet est conçu pour être évolutif. Il s’inscrit dans le cadre d’un projet de fin d’études pour les étudiants de l’ESEO.',
+                      const SizedBox(height: 40),
+                      const Text(
+                        'In collaboration with Cycles JV Fenioux, a velomobile manufacturer, this project is designed to be scalable. It is part of a final year project for ESEO students.',
                         style: TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 40),
-                      Text(
-                        'Pour plus de détails veuillez consulter notre site web',
-                        style: TextStyle(fontSize: 14),
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Vous pouvez consulter le site de l’ESEO ici',
-                        style: TextStyle(fontSize: 14),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () async {
+                          const url = 'https://www.eseo.fr';
+                          if (await canLaunch(url)) {
+                            await launch(url);
+                          } else {
+                            throw 'Could not launch $url';
+                          }
+                        },
+                        child: const Text(
+                          'You can visit the ESEO website here',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -90,7 +107,7 @@ class HomePage extends StatelessWidget {
             Navigator.pushReplacementNamed(context, '/record');
           } else if (index == 2) {
             Navigator.pushReplacementNamed(context, '/activity');
-          }else if (index == 3) {
+          } else if (index == 3) {
             Navigator.pushReplacementNamed(context, '/profile');
           }
         },

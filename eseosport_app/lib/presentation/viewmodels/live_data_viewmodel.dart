@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+
 import '../../data/models/data_model.dart';
 import '../../data/repositories/bluetooth_repository.dart';
 
@@ -9,7 +9,7 @@ class LiveDataViewModel extends ChangeNotifier {
     timestamp: DateTime.now(),
     vitesse: 0.0,
   );
-  bool isInitialized = false;
+  bool _isReceivingData = false;
 
   LiveDataViewModel(this._bluetoothRepository);
 
@@ -18,50 +18,47 @@ class LiveDataViewModel extends ChangeNotifier {
   double? get currentAltitude => _currentData.altitude;
   int? get currentBPM => _currentData.bpm;
   DateTime get timestamp => _currentData.timestamp;
-
+  bool get isReceivingData => _isReceivingData;
 
   Future<void> initialize() async {
-    if (!isInitialized) {
-      // Initialize your Bluetooth configuration here if necessary
-      isInitialized = true;
-      notifyListeners();
-    }
+    // Optional initialization logic
   }
 
   void startReceivingData() {
-    _bluetoothRepository.startScanning();
-    _bluetoothRepository.getDataStream()?.listen((data) {
-      _updateDataFromBluetooth(data);
-    });
+    if (!_isReceivingData) {
+      _bluetoothRepository.startScan();
+      _bluetoothRepository.dataStream.listen((data) {
+        _updateDataFromBluetooth(data);
+      });
+      _isReceivingData = true;
+    }
   }
 
   void stopReceivingData() {
-    _bluetoothRepository.stopScanning();
+    if (_isReceivingData) {
+      _bluetoothRepository.disconnectDevice();
+      _isReceivingData = false;
+    }
   }
 
-  void _updateDataFromBluetooth(List<int> data) {
-  try {
-    // Convert raw data to String
-    String jsonString = String.fromCharCodes(data);
+  void _updateDataFromBluetooth(Map<String, dynamic> data) {
+    try {
+      _currentData = DataPointModel(
+        timestamp: DateTime.now(),
+        vitesse: (data['vitesse'] as num?)?.toDouble() ?? 0.0,
+        altitude: (data['altitude'] as num?)?.toDouble(),
+        bpm: data['bpm'] as int?,
+      );
 
-    // Print to check received JSON content
-    print('Received data: $jsonString');
-
-    // Parse JSON
-    Map<String, dynamic> jsonData = json.decode(jsonString);
-
-    // Manually set the timestamp and activiteId
-    jsonData['timestamp'] = _currentData.timestamp.toIso8601String();
-
-    // Create a new DataPointModel object
-    _currentData = DataPointModel.fromMap(jsonData);
-
-
-
-    // Notify listeners of the change
-    notifyListeners();
-  } catch (e) {
-    print('Error parsing data: $e');
+      notifyListeners();
+    } catch (e) {
+      print('Error parsing Bluetooth data: $e');
+    }
   }
-}
+
+  @override
+  void dispose() {
+    stopReceivingData();
+    super.dispose();
+  }
 }

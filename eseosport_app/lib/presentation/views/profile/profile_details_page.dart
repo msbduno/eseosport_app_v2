@@ -47,12 +47,13 @@ class _Profile2PageState extends State<Profile2Page> {
 
         return Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
+
+            centerTitle: false,
             title: const Text(
               'Profile',
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 16,
+
                 fontWeight: FontWeight.w600,
               ),
             ),
