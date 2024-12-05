@@ -61,4 +61,20 @@ class LiveDataViewModel extends ChangeNotifier {
     stopReceivingData();
     super.dispose();
   }
+
+  Future<bool> checkBluetoothConnection() async {
+    try {
+      // Perform a quick scan and check for connection
+      await _bluetoothRepository.startScan(timeout: const Duration(seconds: 5));
+
+      // Wait a short time to allow connection
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Check if data is being received
+      return _isReceivingData;
+    } catch (e) {
+      print('Bluetooth connection check failed: $e');
+      return false;
+    }
+  }
 }

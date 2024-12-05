@@ -25,7 +25,7 @@ class _RecordPageState extends State<RecordPage> {
   final Future<UserModel?> _userFuture = AuthRepository().getCachedUser();
   Activity? _currentActivity;
 
-  double _cumulativeDistance = 0.0;  // Pour suivre la distance totale
+  double _cumulativeDistance = 0.0;
   late LiveDataViewModel _liveDataVM;
 
   @override
@@ -77,7 +77,7 @@ class _RecordPageState extends State<RecordPage> {
 
     _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      double distanceIncrement = (_liveDataVM.currentSpeed / 3600) * 0.1; // vitesse en km/h * temps en heures
+      double distanceIncrement = (_liveDataVM.currentSpeed / 3600) * 0.1;
       _cumulativeDistance += distanceIncrement;
 
       setState(() {
@@ -144,7 +144,7 @@ class _RecordPageState extends State<RecordPage> {
   void _saveActivityDetails() {
     if (_currentActivity != null) {
       Navigator.pushNamed(context, '/saveActivity', arguments: _currentActivity);
-    }else {
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No activity to save')),
       );
@@ -159,12 +159,82 @@ class _RecordPageState extends State<RecordPage> {
     return '$hours:$minutes:$seconds';
   }
 
+  // New method to test Bluetooth connection
+  void _testBluetoothConnection() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Bluetooth Connection'),
+            IconButton(
+              icon: const Icon(Icons.close),
+              color: Colors.red,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+        content: FutureBuilder(
+          future: _checkBluetoothConnection(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10),
+                  Text('Testing connection...')
+                ],
+              );
+            } else if (snapshot.hasData) {
+              bool isConnected = snapshot.data as bool;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    isConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
+                    color: isConnected ? Colors.green : Colors.red,
+                    size: 50,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    isConnected
+                        ? 'Bluetooth device connected successfully!'
+                        : 'No Bluetooth device found. Please check your device.',
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              );
+            } else {
+              return const Text('Error checking connection');
+            }
+          },
+        ),
+      );
+    },
+  );
+}
+
+  Future<bool> _checkBluetoothConnection() async {
+    try {
+      // Add a timeout to the connection test
+      return await Future.any([
+        Future.delayed(const Duration(seconds: 5), () => false),
+        _liveDataVM.checkBluetoothConnection()
+      ]);
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final liveDataVM = Provider.of<LiveDataViewModel>(context);
 
     return Scaffold(
-      backgroundColor: Colors.white, // Set background color to white
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: FutureBuilder<UserModel?>(
           future: _userFuture,
@@ -179,94 +249,113 @@ class _RecordPageState extends State<RecordPage> {
               final user = snapshot.data!;
               _currentActivity?.user ??= user;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 50),
-                  const Text(
-                    'TIME',
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    _elapsedTime,
-                    style: const TextStyle(
-                      fontSize: 80,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(25.0),
-                        child: buildDataColumn(
-                          'SPEED',
-                          '${liveDataVM.currentSpeed.toStringAsFixed(1)}',
-                          'KM/H',
-                          fontSize: 24.0,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: buildDataColumn(
-                          'DISTANCE',
-                          '${_cumulativeDistance.toStringAsFixed(1)}',
-                          'KILOMETERS',
-                          fontSize: 24.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(45.0),
-                        child: buildDataColumn(
-                          'ELEVATION',
-                          '${liveDataVM.currentAltitude?.toStringAsFixed(0) ?? "0"}',
-                          'METERS',
-                          fontSize: 24.0,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: buildDataColumn(
-                          'BPM',
-                          '${liveDataVM.currentBPM ?? "_ _"}',
-                          '',
-                          fontSize: 24.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CircleButton(
-                        onPressed: _cancelActivity,
-                        icon: Icons.close,
-                        color: Colors.grey,
-                      ),
-                      CircleButton(
-                        onPressed: _toggleRecording,
-                        icon: _isRecording ? Icons.stop : Icons.play_arrow,
-                        color: AppTheme.primaryColor,
-                        size: 70,
-                      ),
-                      CircleButton(
-                        onPressed: _saveActivityDetails,
-                        icon: Icons.arrow_forward_ios_outlined,
-                        color:  AppTheme.primaryColor,
-                      ),
-                    ],
-                  ),
+             return Column(
 
-                ],
-              );
+  crossAxisAlignment: CrossAxisAlignment.center,
+  children: [
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Spacer(),
+        IconButton(
+          icon: const Icon(Icons.settings_bluetooth, color: AppTheme.primaryColor),
+          onPressed: _testBluetoothConnection,
+        ),
+      ],
+    ),
+            const Text(
+            'TIME',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+            color: Colors.black54,
+            fontSize: 16,
+            ),
+            ),
+
+    Text(
+      _elapsedTime,
+      style: const TextStyle(
+        fontSize: 80,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0), // Reduced padding
+              child: buildDataColumn(
+                'SPEED',
+                '${liveDataVM.currentSpeed.toStringAsFixed(1)}',
+                'KM/H',
+                fontSize: 24.0,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(2.0), // Reduced padding
+              child: buildDataColumn(
+                'DISTANCE',
+                '${_cumulativeDistance.toStringAsFixed(1)}',
+                'KILOMETERS',
+                fontSize: 24.0,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 2), // Further reduced space between sections
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center, // Center the Row
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0), // Reduced padding
+              child: buildDataColumn(
+                'ELEVATION',
+                '${liveDataVM.currentAltitude?.toStringAsFixed(0) ?? "0"}',
+                'METERS',
+                fontSize: 24.0,
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(5.0), // Reduced padding
+              child: buildDataColumn(
+                'BPM',
+                '${liveDataVM.currentBPM ?? "_ _"}',
+                '',
+                fontSize: 24.0,
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+    const SizedBox(height: 50),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        CircleButton(
+          onPressed: _cancelActivity,
+          icon: Icons.close,
+          color: Colors.grey,
+        ),
+        CircleButton(
+          onPressed: _toggleRecording,
+          icon: _isRecording ? Icons.stop : Icons.play_arrow,
+          color: AppTheme.primaryColor,
+          size: 70,
+        ),
+        CircleButton(
+          onPressed: _saveActivityDetails,
+          icon: Icons.arrow_forward_ios_outlined,
+          color: AppTheme.primaryColor,
+        ),
+      ],
+    ),
+  ],
+);
             }
           },
         ),
@@ -286,4 +375,3 @@ class _RecordPageState extends State<RecordPage> {
     );
   }
 }
-
