@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:eseosport_app/data/models/user_model.dart';
 import 'package:eseosport_app/data/repositories/auth_repository.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/activity_model.dart';
+import '../../../data/repositories/bluetooth_repository.dart';
 import '../../widgets/circle_button.dart';
 import '../../widgets/data_column.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
@@ -18,13 +20,14 @@ class RecordPage extends StatefulWidget {
 }
 
 class _RecordPageState extends State<RecordPage> {
+  bool _isScanning = false;
+  final BluetoothRepository bluetoothRepository = BluetoothRepository();
   bool _isRecording = false;
   late Stopwatch _stopwatch;
   late Timer _timer;
   String _elapsedTime = '00:00:00';
   final Future<UserModel?> _userFuture = AuthRepository().getCachedUser();
   Activity? _currentActivity;
-
   double _cumulativeDistance = 0.0;
   late LiveDataViewModel _liveDataVM;
 
@@ -159,74 +162,114 @@ class _RecordPageState extends State<RecordPage> {
     return '$hours:$minutes:$seconds';
   }
 
-  // New method to test Bluetooth connection
-  void _testBluetoothConnection() {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Bluetooth Connection'),
-            IconButton(
-              icon: const Icon(Icons.close),
-              color: Colors.red,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
-        content: FutureBuilder(
-          future: _checkBluetoothConnection(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 10),
-                  Text('Testing connection...')
-                ],
-              );
-            } else if (snapshot.hasData) {
-              bool isConnected = snapshot.data as bool;
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    isConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
-                    color: isConnected ? Colors.green : Colors.red,
-                    size: 50,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    isConnected
-                        ? 'Bluetooth device connected successfully!'
-                        : 'No Bluetooth device found. Please check your device.',
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              );
-            } else {
-              return const Text('Error checking connection');
-            }
-          },
-        ),
-      );
-    },
-  );
-}
+  void performBluetoothScan() {
+    setState(() {
+      _isScanning = true;
+    });
 
-  Future<bool> _checkBluetoothConnection() async {
-    try {
-      // Add a timeout to the connection test
-      return await Future.any([
-        Future.delayed(const Duration(seconds: 5), () => false),
-        _liveDataVM.checkBluetoothConnection()
-      ]);
-    } catch (e) {
-      return false;
-    }
+    // Scan for Bluetooth device with the methode of bluetooth repository
+    bluetoothRepository.startScan().then((value) {
+      setState(() {
+        _isScanning = false;
+      });
+    });
+  }
+
+  void _testBluetoothConnection() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Bluetooth Connection',
+                    style: TextStyle(color: Colors.black, fontSize: 20),
+                  ),
+                  IconButton(
+                      icon: const Icon(Icons.close),
+                      color: Colors.red,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        FlutterBluePlus.stopScan();
+                      }
+                  ),
+                ],
+              ),
+              content: Consumer<BluetoothRepository>(
+                builder: (context, bluetoothRepo, child) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (bluetoothRepo.isScanning)
+                        const Column(
+                          children: [
+                            CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor)
+                            ),
+                            SizedBox(height: 10),
+                            Text('Scanning for Bluetooth device...'),
+                          ],
+                        )
+                      else
+                        Column(
+                          children: [
+                            Icon(
+                              bluetoothRepo.isConnected
+                                  ? Icons.bluetooth_connected
+                                  : Icons.bluetooth_disabled,
+                              color: bluetoothRepo.isConnected
+                                  ? AppTheme.primaryColor
+                                  : Colors.grey,
+                              size: 50,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              bluetoothRepo.isConnected
+                                  ? 'Bluetooth device connected successfully!'
+                                  : 'No Bluetooth device found. Please check your device.',
+                              textAlign: TextAlign.center,
+                            )
+                          ],
+                        ),
+                    ],
+                  );
+                },
+              ),
+              actions: [
+                Consumer<BluetoothRepository>(
+                  builder: (context, bluetoothRepo, child) {
+                    return bluetoothRepo.isScanning
+                        ? TextButton(
+                      onPressed: () {
+                        FlutterBluePlus.stopScan();
+                        bluetoothRepo.stopScan();
+                      },
+                      child: const Text(
+                        'Stop Scan',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    )
+                        : TextButton(
+                      onPressed: () async {
+                        await bluetoothRepo.startScan();
+                      },
+                      child: Text(
+                        'Scan Again',
+                        style: TextStyle(color: AppTheme.primaryColor),
+                      ),
+                    );
+                  },
+                )
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -249,113 +292,111 @@ class _RecordPageState extends State<RecordPage> {
               final user = snapshot.data!;
               _currentActivity?.user ??= user;
 
-             return Column(
-
-  crossAxisAlignment: CrossAxisAlignment.center,
-  children: [
-    Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Spacer(),
-        IconButton(
-          icon: const Icon(Icons.settings_bluetooth, color: AppTheme.primaryColor),
-          onPressed: _testBluetoothConnection,
-        ),
-      ],
-    ),
-            const Text(
-            'TIME',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-            color: Colors.black54,
-            fontSize: 16,
-            ),
-            ),
-
-    Text(
-      _elapsedTime,
-      style: const TextStyle(
-        fontSize: 80,
-        fontWeight: FontWeight.w500,
-      ),
-    ),
-    Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0), // Reduced padding
-              child: buildDataColumn(
-                'SPEED',
-                '${liveDataVM.currentSpeed.toStringAsFixed(1)}',
-                'KM/H',
-                fontSize: 24.0,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(2.0), // Reduced padding
-              child: buildDataColumn(
-                'DISTANCE',
-                '${_cumulativeDistance.toStringAsFixed(1)}',
-                'KILOMETERS',
-                fontSize: 24.0,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 2), // Further reduced space between sections
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center, // Center the Row
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0), // Reduced padding
-              child: buildDataColumn(
-                'ELEVATION',
-                '${liveDataVM.currentAltitude?.toStringAsFixed(0) ?? "0"}',
-                'METERS',
-                fontSize: 24.0,
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(5.0), // Reduced padding
-              child: buildDataColumn(
-                'BPM',
-                '${liveDataVM.currentBPM ?? "_ _"}',
-                '',
-                fontSize: 24.0,
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-    const SizedBox(height: 50),
-    Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        CircleButton(
-          onPressed: _cancelActivity,
-          icon: Icons.close,
-          color: Colors.grey,
-        ),
-        CircleButton(
-          onPressed: _toggleRecording,
-          icon: _isRecording ? Icons.stop : Icons.play_arrow,
-          color: AppTheme.primaryColor,
-          size: 70,
-        ),
-        CircleButton(
-          onPressed: _saveActivityDetails,
-          icon: Icons.arrow_forward_ios_outlined,
-          color: AppTheme.primaryColor,
-        ),
-      ],
-    ),
-  ],
-);
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.settings_bluetooth, color: AppTheme.primaryColor),
+                        onPressed: _testBluetoothConnection,
+                      ),
+                    ],
+                  ),
+                  const Text(
+                    'TIME',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    _elapsedTime,
+                    style: const TextStyle(
+                      fontSize: 80,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10.0), // Reduced padding
+                            child: buildDataColumn(
+                              'SPEED',
+                              '${liveDataVM.currentSpeed.toStringAsFixed(1)}',
+                              'KM/H',
+                              fontSize: 24.0,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(2.0), // Reduced padding
+                            child: buildDataColumn(
+                              'DISTANCE',
+                              '${_cumulativeDistance.toStringAsFixed(1)}',
+                              'KILOMETERS',
+                              fontSize: 24.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 2), // Further reduced space between sections
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center, // Center the Row
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(20.0), // Reduced padding
+                            child: buildDataColumn(
+                              'ELEVATION',
+                              '${liveDataVM.currentAltitude?.toStringAsFixed(0) ?? "0"}',
+                              'METERS',
+                              fontSize: 24.0,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20.0), // Reduced padding
+                            child: buildDataColumn(
+                              'BPM',
+                              '${liveDataVM.currentBPM ?? "_ _"}',
+                              '',
+                              fontSize: 24.0,
+                            ),
+                          ),
+                          const SizedBox(width: 30),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CircleButton(
+                        onPressed: _cancelActivity,
+                        icon: Icons.close,
+                        color: Colors.grey,
+                      ),
+                      CircleButton(
+                        onPressed: _toggleRecording,
+                        icon: _isRecording ? Icons.stop : Icons.play_arrow,
+                        color: AppTheme.primaryColor,
+                        size: 70,
+                      ),
+                      CircleButton(
+                        onPressed: _saveActivityDetails,
+                        icon: Icons.arrow_forward_ios_outlined,
+                        color: AppTheme.primaryColor,
+                      ),
+                    ],
+                  ),
+                ],
+              );
             }
           },
         ),

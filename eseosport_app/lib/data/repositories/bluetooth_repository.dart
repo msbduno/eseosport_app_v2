@@ -11,44 +11,82 @@ class BluetoothRepository extends ChangeNotifier {
   BluetoothDevice? _connectedDevice;
   BluetoothCharacteristic? _dataCharacteristic;
   final _dataController = StreamController<Map<String, dynamic>>.broadcast();
+  bool _isScanning = false;
+  bool _isConnected = false;
 
   Stream<Map<String, dynamic>> get dataStream => _dataController.stream;
+  bool get hasDataCharacteristic => _dataCharacteristic != null;
+  bool get isScanning => _isScanning;
+  bool get isConnected => _isConnected;
 
-
-  Future<void> startScan({Duration timeout = const Duration(seconds: 10)}) async {
+  Future<bool> startScan({Duration timeout = const Duration(seconds: 10)}) async {
     try {
-      print(' Démarrage du scan Bluetooth...');
+      _isScanning = true;
+      notifyListeners();
+      print('Démarrage du scan Bluetooth...');
+
       if (await FlutterBluePlus.isAvailable == false) {
-        print(' Bluetooth non supporté sur cet appareil');
-        return;
+        print('Bluetooth non supporté sur cet appareil');
+        _isScanning = false;
+        notifyListeners();
+        return false;
       }
+
       await FlutterBluePlus.stopScan();
-      FlutterBluePlus.scanResults.listen((results) {
+
+      final completer = Completer<bool>();
+
+      FlutterBluePlus.scanResults.listen((results) async {
         for (ScanResult result in results) {
           if (result.device.name == TARGET_DEVICE_NAME) {
-            print(' Appareil ESP32 trouvé : ${result.device.name}');
+            print('Appareil ESP32 trouvé : ${result.device.name}');
             FlutterBluePlus.stopScan();
-            _connectToDevice(result.device);
-            break;
+
+            bool connected = await _connectToDevice(result.device);
+            _isScanning = false;
+            notifyListeners();
+
+            completer.complete(connected);
+            return;
           }
         }
       }, onError: (error) {
-        print(' Erreur de scan : $error');
+        print('Erreur de scan : $error');
+        _isScanning = false;
+        notifyListeners();
+        completer.complete(false);
       });
+
       await FlutterBluePlus.startScan(timeout: timeout);
+
+      return await completer.future;
     } catch (e) {
-      print(' Erreur lors du scan : $e');
+      print('Erreur lors du scan : $e');
+      _isScanning = false;
+      notifyListeners();
+      return false;
     }
   }
 
-  Future<void> _connectToDevice(BluetoothDevice device) async {
+  void stopScan() {
+    if (_isScanning) {
+      FlutterBluePlus.stopScan();
+      _isScanning = false;
+      _isConnected = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> _connectToDevice(BluetoothDevice device) async {
     try {
-      print(' Tentative de connexion à : ${device.name}');
+      print('Tentative de connexion à : ${device.name}');
       await device.connect(timeout: const Duration(seconds: 15));
-      print(' Connecté à l\'appareil : ${device.name}');
+      print('Connecté à l\'appareil : ${device.name}');
+
       _connectedDevice = device;
       List<BluetoothService> services = await device.discoverServices();
-      print(' Services découverts : ${services.length}');
+      print('Services découverts : ${services.length}');
+
       for (BluetoothService service in services) {
         if (service.uuid.toString() == SERVICE_UUID) {
           for (BluetoothCharacteristic characteristic in service.characteristics) {
@@ -58,14 +96,23 @@ class BluetoothRepository extends ChangeNotifier {
               characteristic.value.listen((value) {
                 _processIncomingData(value);
               });
-              print(' Caractéristique de données trouvée et configurée');
-              break;
+
+              _isConnected = true;
+              notifyListeners();
+
+              print('Caractéristique de données trouvée et configurée');
+              return true;
             }
           }
         }
       }
+
+      return false;
     } catch (e) {
       print('Erreur de connexion : $e');
+      _isConnected = false;
+      notifyListeners();
+      return false;
     }
   }
 

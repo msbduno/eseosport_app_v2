@@ -42,6 +42,14 @@ class _MyAppState extends State<MyApp> {
         Provider<ActivityRepository>(
           create: (_) => ActivityRepository(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => BluetoothRepository(), // Add this line
+        ),
+        ChangeNotifierProvider(
+          create: (context) => LiveDataViewModel(
+            context.read<BluetoothRepository>(), // Update this line
+          ),
+        ),
         ChangeNotifierProvider<ActivityViewModel>(
           create: (context) => ActivityViewModel(
             context.read<ActivityRepository>(),
