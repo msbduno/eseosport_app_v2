@@ -75,8 +75,8 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                   ),
                   child: ListTile(
                     title: Text(
-                      'Durée: ${widget.activity.duration} secondes\n'
-                          'Distance: ${widget.activity.distance} km\n'
+                      'Durée: ${widget.activity.formattedDuration} \n'
+                          'Distance: ${widget.activity.distance.toStringAsFixed(3)} km\n'
                           'Dénivelé: ${widget.activity.elevation} mètres',
                       style: const TextStyle(
                         color: Colors.black,

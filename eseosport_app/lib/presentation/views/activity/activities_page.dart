@@ -6,6 +6,19 @@ import '../../widgets/custom_bottom_nav_bar.dart';
 class ActivitiesPage extends StatelessWidget {
   const ActivitiesPage({super.key});
 
+
+  IconData _getActivityIcon(String activityType) {
+    switch (activityType.toLowerCase()) {
+      case 'cycling':
+        return Icons.directions_bike;
+      case 'running':
+        return Icons.directions_run;
+      case 'walking':
+        return Icons.directions_walk;
+      default:
+        return Icons.fitness_center;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final activityViewModel = Provider.of<ActivityViewModel>(context);
@@ -51,8 +64,8 @@ class ActivitiesPage extends StatelessWidget {
                                   color: Colors.grey[200],
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
-                                  Icons.directions_bike,
+                                child: Icon(
+                                  _getActivityIcon(activity.activityType), // Replace with a method to select icon
                                   color: Colors.black54,
                                 ),
                               ),
@@ -95,17 +108,10 @@ class ActivitiesPage extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${activity.duration} mins',
+                                      '${activity.formattedDuration} ',
                                       style: const TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const Text(
-                                      'MINUTES',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12,
                                       ),
                                     ),
                                   ],
@@ -191,3 +197,4 @@ class ActivitiesPage extends StatelessWidget {
     );
   }
 }
+

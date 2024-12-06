@@ -12,18 +12,33 @@ class Activity {
   late final UserModel? user;
   final String activityType;
 
-  Activity({
-    required this.idActivity,
-    required this.date,
-    required this.duration,
-    required this.distance,
-    required this.elevation,
-    required this.averageSpeed,
-    required this.averageBPM,
-    this.comment,
-    required this.user,
-    this.activityType = 'Bike',
-  });
+
+Activity({
+  required this.idActivity,
+  required this.date,
+  required this.duration,
+  required double distance,
+  required this.elevation,
+  required this.averageSpeed,
+  required this.averageBPM,
+  this.comment,
+  required this.user,
+  this.activityType = 'Bike',
+}) : distance = double.parse(distance.toStringAsFixed(3));
+  String get formattedDuration {
+    final hours = duration ~/ 3600;
+    final minutes = (duration % 3600) ~/ 60;
+    final seconds = duration % 60;
+
+    if (hours > 0) {
+      return '${hours.toString().padLeft(2, '0')}h ${minutes.toString().padLeft(2, '0')}m ${seconds.toString().padLeft(2, '0')}s';
+    } else if (minutes > 0) {
+      return '${minutes.toString().padLeft(2, '0')}m ${seconds.toString().padLeft(2, '0')}s';
+    } else {
+      return '${seconds.toString().padLeft(2, '0')}s';
+    }
+  }
+
 
   Activity copyWith({
     int? idActivity,
