@@ -134,6 +134,10 @@ class _RecordPageState extends State<RecordPage> {
       _currentActivity = null;
       _elapsedTime = '00:00:00';
       _cumulativeDistance = 0.0;
+
+      // Reset LiveDataViewModel to ensure all displayed values return to zero
+      _liveDataVM = Provider.of<LiveDataViewModel>(context, listen: false);
+      _liveDataVM.resetData(); // You'll need to add this method to the LiveDataViewModel
     });
 
     _stopwatch.stop();
@@ -257,7 +261,7 @@ class _RecordPageState extends State<RecordPage> {
                       onPressed: () async {
                         await bluetoothRepo.startScan();
                       },
-                      child: Text(
+                      child: const Text(
                         'Scan Again',
                         style: TextStyle(color: AppTheme.primaryColor),
                       ),

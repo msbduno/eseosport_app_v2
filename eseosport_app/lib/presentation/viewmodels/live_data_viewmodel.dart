@@ -5,6 +5,11 @@ import '../../data/repositories/bluetooth_repository.dart';
 
 class LiveDataViewModel extends ChangeNotifier {
   final BluetoothRepository _bluetoothRepository;
+
+  double _currentSpeed = 0.0;
+  double _currentAltitude = 0.0;
+  int _currentBPM = 0;
+
   DataPointModel _currentData = DataPointModel(
     timestamp: DateTime.now(),
     vitesse: 0.0,
@@ -39,6 +44,16 @@ class LiveDataViewModel extends ChangeNotifier {
       _bluetoothRepository.disconnectDevice();
       _isReceivingData = false;
     }
+  }
+
+  void resetData() {
+    _currentData = DataPointModel(
+      timestamp: DateTime.now(),
+      vitesse: 0.0,
+      altitude: null,
+      bpm: null,
+    );
+    notifyListeners();
   }
 
   void _updateDataFromBluetooth(Map<String, dynamic> data) {
