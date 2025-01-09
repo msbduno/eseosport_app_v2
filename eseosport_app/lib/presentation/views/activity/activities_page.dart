@@ -6,6 +6,7 @@ import '../../widgets/custom_bottom_nav_bar.dart';
 import '../home_page.dart';
 import '../profile/profile_page.dart';
 import '../record/record_page.dart';
+import 'details_activity_page.dart';
 
 class ActivitiesPage extends StatelessWidget {
   const ActivitiesPage({super.key});
@@ -63,11 +64,6 @@ class ActivitiesPage extends StatelessWidget {
       navigationBar: const CupertinoNavigationBar(
         middle: Text(
           'Activities',
-          style: TextStyle(
-            inherit: true, // Assurez-vous que inherit est true
-            fontSize: 17, // Taille standard iOS
-            fontWeight: FontWeight.w600,
-          ),
         ),
       ),
       child: SafeArea(
@@ -80,148 +76,160 @@ class ActivitiesPage extends StatelessWidget {
                   final activity = activityViewModel.activities[index];
                   return Column(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        width: double.infinity,
-                        color: CupertinoColors.systemBackground,
-                        child: Stack(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: CupertinoColors.systemGrey4,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          _getActivityIcon(
-                                              activity.activityType),
-                                          color: CupertinoColors.black,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Activity ${activity.idActivity}',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16,
-                                            ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => ActivityDetailsPage(
+                                activity: activity,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          width: double.infinity,
+                          color: CupertinoColors.systemBackground,
+                          child: Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: CupertinoColors.systemGrey4,
+                                            shape: BoxShape.circle,
                                           ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            '${activity.date.toLocal()}'
-                                                .split(' ')[0],
-                                            style: TextStyle(
-                                              color: CupertinoColors.systemGrey,
-                                              fontSize: 14,
-                                            ),
+                                          child: Icon(
+                                            _getActivityIcon(
+                                                activity.activityType),
+                                            color: CupertinoColors.black,
                                           ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Column(
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            const Text(
-                                              'TIME',
-                                              style: TextStyle(
-                                                color:
-                                                    CupertinoColors.systemGrey,
-                                                fontSize: 12,
+                                            Text(
+                                              'Activity ${activity.idActivity}',
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16,
                                               ),
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              '${activity.formattedDuration} ',
-                                              style: const TextStyle(
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.w500,
+                                              '${activity.date.toLocal()}'
+                                                  .split(' ')[0],
+                                              style: TextStyle(
+                                                color: CupertinoColors.systemGrey,
+                                                fontSize: 14,
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                      Container(
-                                        width: 1,
-                                        height: 50,
-                                        color: CupertinoColors.systemGrey4,
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 16),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Expanded(
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
                                               const Text(
-                                                'DISTANCE',
+                                                'TIME',
                                                 style: TextStyle(
-                                                  color: CupertinoColors
-                                                      .systemGrey,
+                                                  color:
+                                                      CupertinoColors.systemGrey,
                                                   fontSize: 12,
                                                 ),
                                               ),
                                               const SizedBox(height: 4),
                                               Text(
-                                                '${activity.distance} km',
+                                                '${activity.formattedDuration} ',
                                                 style: const TextStyle(
                                                   fontSize: 24,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                               ),
-                                              const Text(
-                                                'KILOMETERS',
-                                                style: TextStyle(
-                                                  color: CupertinoColors
-                                                      .systemGrey,
-                                                  fontSize: 12,
-                                                ),
-                                              ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        Container(
+                                          width: 1,
+                                          height: 50,
+                                          color: CupertinoColors.systemGrey4,
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 16),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Text(
+                                                  'DISTANCE',
+                                                  style: TextStyle(
+                                                    color: CupertinoColors
+                                                        .systemGrey,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  '${activity.distance} km',
+                                                  style: const TextStyle(
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                const Text(
+                                                  'KILOMETERS',
+                                                  style: TextStyle(
+                                                    color: CupertinoColors
+                                                        .systemGrey,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: CupertinoButton(
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () => _showDeleteConfirmation(
+                                    context,
+                                    activityViewModel,
+                                    activity.idActivity,
                                   ),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: CupertinoButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () => _showDeleteConfirmation(
-                                  context,
-                                  activityViewModel,
-                                  activity.idActivity,
-                                ),
-                                child: Icon(
-                                  CupertinoIcons.clear,
-                                  color: CupertinoColors.systemRed,
-                                  size: 20,
+                                  child: Icon(
+                                    CupertinoIcons.clear,
+                                    color: CupertinoColors.systemRed,
+                                    size: 20,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       if (index < activityViewModel.activities.length - 1)

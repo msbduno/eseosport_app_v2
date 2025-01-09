@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:eseosport_app/data/models/user_model.dart';
 import 'package:eseosport_app/data/repositories/auth_repository.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/activity_model.dart';
 import '../../../data/repositories/bluetooth_repository.dart';
@@ -116,7 +115,6 @@ class _RecordPageState extends State<RecordPage> {
         averageBPM: _liveDataVM.currentBPM ?? 0,
         user: _currentActivity!.user!,
       );
-      // Sauvegarder l'activité
       //await ActivityRepository.saveActivity(finalActivity);
     }
 

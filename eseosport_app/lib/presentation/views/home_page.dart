@@ -1,9 +1,41 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
+import '../viewmodels/activity_viewmodel.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
+import '../widgets/weekly_chart_widget.dart';
+import 'activity/details_activity_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ActivityViewModel>(context, listen: false).getlastActivity();
+    });
+  }
+
+  IconData _getActivityIcon(String activityType) {
+  switch (activityType.toLowerCase()) {
+    case 'cycling':
+      return Icons.directions_bike;
+    case 'running':
+      return Icons.directions_run;
+    case 'walking':
+      return Icons.directions_walk;
+    default:
+      return CupertinoIcons.question;
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -30,6 +62,150 @@ class HomePage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
+                          SizedBox(height: 20),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: CupertinoColors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CupertinoColors.systemGrey.withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Weekly Report - Activities",
+                                  style: TextStyle(
+                                      fontSize: 15, fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 170,
+                                  width: 500,
+                                  child: WeeklyActivityChart(),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: CupertinoColors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: CupertinoColors.systemGrey.withOpacity(0.2),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(16.0),
+                                child: SizedBox(
+                                  height: 125,
+                                  width: 135,
+                                  child: Consumer<ActivityViewModel>(
+                                    builder: (context, activityViewModel, child) {
+                                      if (activityViewModel.activities.isNotEmpty) {
+                                        final lastActivity = activityViewModel.activities.last;
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                builder: (context) => ActivityDetailsPage(
+                                                  activity: lastActivity,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Text(
+      "Last Activity",
+      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+    ),
+    SizedBox(height: 20),
+    Center(
+      child: Icon(
+        _getActivityIcon(lastActivity.activityType), // Activity type icon
+        size: 45,
+      ),
+    ),
+    SizedBox(height: 20),
+    Row(
+      children: [
+        Icon(
+          CupertinoIcons.location,
+          size: 20,
+        ),
+        SizedBox(width: 4),
+        Text(" ${lastActivity.distance} km"),
+      ],
+    ),
+
+
+  ],
+)
+                                        );
+                                      } else {
+                                        return Text(
+                                          "No activities found",
+                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                              Container(
+  decoration: BoxDecoration(
+    color: CupertinoColors.white,
+    borderRadius: BorderRadius.circular(12),
+    boxShadow: [
+      BoxShadow(
+        color: CupertinoColors.systemGrey.withOpacity(0.2),
+        blurRadius: 8,
+        offset: const Offset(0, 2),
+      ),
+    ],
+  ),
+  padding: const EdgeInsets.all(16.0),
+  child: SizedBox(
+    height: 125,
+    width: 135,
+    child: Column(
+
+      children: [
+        Text(
+          "Weather / Pollution",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 30),
+        Icon(
+          CupertinoIcons.cloud_sun,
+          size: 44,
+        ),
+      ],
+    ),
+  ),
+)
+                            ],
+                          ),
+                          const SizedBox(height: 40),
                           const Text(
                             'PFE DESCRIPTION',
                             style: TextStyle(
@@ -37,48 +213,46 @@ class HomePage extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 15),
                           const Text(
-                            'Launch date: September 16, 2024',
+                            'Launch date : September 16, 2024',
                             style: TextStyle(fontSize: 14),
                           ),
-                          const SizedBox(height: 50),
+                          const SizedBox(height: 40),
                           const Text(
                             'The ESEOSPORT project is an innovative project designed to showcase the technological skills and expertise of ESEO, combining electronics and computer science. This application offers an immersive experience allowing users to explore various aspects of a velomobile and evaluate their physical performance.',
                             style: TextStyle(fontSize: 14),
                           ),
                           const SizedBox(height: 40),
-                          Image.asset('assets/solution.png'),
-                          const SizedBox(height: 40),
-                          const Text(
-                            'The ESEOSPORT project operates through collaboration between several students. An electronics team installs and manages sensors on the velomobile, capturing key data such as speed, elevation, and physiological information.',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(height: 40),
-                          Image.asset('assets/hardware.png'),
-                          const SizedBox(height: 40),
-                          const Text(
-                            'This data is then transmitted in real-time to the application via Bluetooth, allowing live display of performance on the user interface.',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(height: 40),
-                          Image.asset('assets/software.png'),
-                          const SizedBox(height: 40),
-                          const Text(
-                            'The application also records each route, providing the user with a complete history to analyze their performance and track their progress. This system creates a connected, interactive, and optimized driving experience.',
-                            style: TextStyle(fontSize: 14),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: CupertinoColors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CupertinoColors.systemGrey
+                                      .withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(16.0),
+                            child: Image.asset('assets/solution.png'),
                           ),
                           const SizedBox(height: 40),
                           const Text(
                             'In collaboration with Cycles JV Fenioux, a velomobile manufacturer, this project is designed to be scalable. It is part of a final year project for ESEO students.',
                             style: TextStyle(fontSize: 14),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 30),
                           GestureDetector(
                             onTap: () async {
                               const url = 'https://www.eseo.fr';
                               if (await canLaunch(url)) {
                                 await launch(url);
+                              } else {
+                                throw 'Could not launch $url';
                               }
                             },
                             child: const Text(
