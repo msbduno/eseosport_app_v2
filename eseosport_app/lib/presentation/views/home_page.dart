@@ -13,7 +13,6 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
@@ -24,17 +23,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   IconData _getActivityIcon(String activityType) {
-  switch (activityType.toLowerCase()) {
-    case 'cycling':
-      return Icons.directions_bike;
-    case 'running':
-      return Icons.directions_run;
-    case 'walking':
-      return Icons.directions_walk;
-    default:
-      return CupertinoIcons.question;
+    switch (activityType.toLowerCase()) {
+      case 'cycling':
+        return Icons.directions_bike;
+      case 'running':
+        return Icons.directions_run;
+      case 'walking':
+        return Icons.directions_walk;
+      default:
+        return CupertinoIcons.question;
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +68,8 @@ class _HomePageState extends State<HomePage> {
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: CupertinoColors.systemGrey.withOpacity(0.2),
+                                  color: CupertinoColors.systemGrey
+                                      .withOpacity(0.2),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -82,7 +82,8 @@ class _HomePageState extends State<HomePage> {
                                 Text(
                                   "Weekly Report - Activities",
                                   style: TextStyle(
-                                      fontSize: 15, fontWeight: FontWeight.bold),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(
                                   height: 170,
@@ -92,7 +93,6 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                           ),
-
                           const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -103,7 +103,8 @@ class _HomePageState extends State<HomePage> {
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: CupertinoColors.systemGrey.withOpacity(0.2),
+                                      color: CupertinoColors.systemGrey
+                                          .withOpacity(0.2),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -114,54 +115,63 @@ class _HomePageState extends State<HomePage> {
                                   height: 125,
                                   width: 135,
                                   child: Consumer<ActivityViewModel>(
-                                    builder: (context, activityViewModel, child) {
-                                      if (activityViewModel.activities.isNotEmpty) {
-                                        final lastActivity = activityViewModel.activities.last;
+                                    builder:
+                                        (context, activityViewModel, child) {
+                                      if (activityViewModel
+                                          .activities.isNotEmpty) {
+                                        final lastActivity =
+                                            activityViewModel.activities.first;
                                         return GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              CupertinoPageRoute(
-                                                builder: (context) => ActivityDetailsPage(
-                                                  activity: lastActivity,
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      ActivityDetailsPage(
+                                                    activity: lastActivity,
+                                                  ),
                                                 ),
-                                              ),
-                                            );
-                                          },
-                                          child: Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    Text(
-      "Last Activity",
-      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-    ),
-    SizedBox(height: 20),
-    Center(
-      child: Icon(
-        _getActivityIcon(lastActivity.activityType), // Activity type icon
-        size: 45,
-      ),
-    ),
-    SizedBox(height: 20),
-    Row(
-      children: [
-        Icon(
-          CupertinoIcons.location,
-          size: 20,
-        ),
-        SizedBox(width: 4),
-        Text(" ${lastActivity.distance} km"),
-      ],
-    ),
-
-
-  ],
-)
-                                        );
+                                              );
+                                            },
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Last Activity",
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                SizedBox(height: 20),
+                                                Center(
+                                                  child: Icon(
+                                                    _getActivityIcon(lastActivity
+                                                        .activityType), // Activity type icon
+                                                    size: 45,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 20),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      CupertinoIcons.location,
+                                                      size: 20,
+                                                    ),
+                                                    SizedBox(width: 4),
+                                                    Text(
+                                                        " ${lastActivity.distance} km"),
+                                                  ],
+                                                ),
+                                              ],
+                                            ));
                                       } else {
                                         return Text(
                                           "No activities found",
-                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold),
                                         );
                                       }
                                     },
@@ -169,40 +179,40 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               Container(
-  decoration: BoxDecoration(
-    color: CupertinoColors.white,
-    borderRadius: BorderRadius.circular(12),
-    boxShadow: [
-      BoxShadow(
-        color: CupertinoColors.systemGrey.withOpacity(0.2),
-        blurRadius: 8,
-        offset: const Offset(0, 2),
-      ),
-    ],
-  ),
-  padding: const EdgeInsets.all(16.0),
-  child: SizedBox(
-    height: 125,
-    width: 135,
-    child: Column(
-
-      children: [
-        Text(
-          "Weather / Pollution",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 30),
-        Icon(
-          CupertinoIcons.cloud_sun,
-          size: 44,
-        ),
-      ],
-    ),
-  ),
-)
+                                decoration: BoxDecoration(
+                                  color: CupertinoColors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: CupertinoColors.systemGrey
+                                          .withOpacity(0.2),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(16.0),
+                                child: SizedBox(
+                                  height: 125,
+                                  width: 135,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Weather / Pollution",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 30),
+                                      Icon(
+                                        CupertinoIcons.cloud_sun,
+                                        size: 44,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                           const SizedBox(height: 40),

@@ -118,6 +118,27 @@ class ActivityDetailsPage extends StatelessWidget {
                     _buildMetricRow('AVERAGE SPEED', activity.averageSpeed.toString(), 'KM/H'),
                     const SizedBox(height: 24),
                     _buildMetricRow('AVERAGE BPM', '${activity.averageBPM ?? 0}', 'BPM'),
+                    const SizedBox(height: 24),
+                    if (activity.comment != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'COMMENT',
+                            style: const TextStyle(
+                              color: CupertinoColors.systemGrey,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            activity.comment!,
+                            style: const TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
