@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../viewmodels/auth_viewmodel.dart';
-import '../../widgets/custom_bottom_nav_bar.dart';
 
 class Profile2Page extends StatefulWidget {
   const Profile2Page({super.key});
@@ -45,42 +44,51 @@ class _Profile2PageState extends State<Profile2Page> {
       builder: (context, authViewModel, _) {
         final user = authViewModel.user;
 
-        return Scaffold(
-          appBar: AppBar(
-
-            centerTitle: false,
-            title: const Text(
+        return CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            middle: const Text(
               'Profile',
               style: TextStyle(
-                color: Colors.black,
-
-                fontWeight: FontWeight.w600,
+                inherit: true,
+                color: CupertinoColors.black,
+                fontSize: 17,
               ),
             ),
-            backgroundColor: Colors.white,
-            elevation: 0,
+            backgroundColor: CupertinoColors.white,
+            border: null,
+            leading: CupertinoButton(
+              padding: EdgeInsets.zero,
+              child: const Icon(CupertinoIcons.back),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           ),
-          body: Container(
-            // add background color
-            color: Colors.white,
+          backgroundColor: CupertinoColors.white,
+          child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Form(
                 key: _formKey,
-                child: Column(
+                child: ListView(
                   children: [
                     const SizedBox(height: 24),
                     // Avatar Section
                     Column(
                       children: [
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Colors.grey.shade100,
-                          child: Text(
-                            '${user?.nom[0].toUpperCase()}${user?.prenom[0].toUpperCase()}',
-                            style: TextStyle(
-                              fontSize: 40,
-                              color: Colors.grey,
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: CupertinoColors.systemGrey6,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${user?.nom[0].toUpperCase()}${user?.prenom[0].toUpperCase()}',
+                              style: const TextStyle(
+                                inherit: true,
+                                fontSize: 40,
+                                color: CupertinoColors.systemGrey,
+                              ),
                             ),
                           ),
                         ),
@@ -88,78 +96,39 @@ class _Profile2PageState extends State<Profile2Page> {
                       ],
                     ),
                     const SizedBox(height: 32),
-                    // Form Fields
                     _buildTextField(
                       controller: _nameController,
-                      icon: Icons.person_outline,
-                      label: 'Full Name',
+                      placeholder: 'Full Name',
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
                       controller: _emailController,
-                      icon: Icons.mail_outline,
-                      label: 'Email',
+                      placeholder: 'Email',
                       keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
                       controller: _passwordController,
-                      icon: Icons.lock_outline,
-                      label: 'Password',
+                      placeholder: 'Password',
                       obscureText: true,
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
                       controller: _confirmPasswordController,
-                      icon: Icons.lock_outline,
-                      label: 'Password Again',
+                      placeholder: 'Password Again',
                       obscureText: true,
                     ),
                     const SizedBox(height: 32),
-                    // Save Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: AppTheme.primaryColor,
-                            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            minimumSize: const Size(350, 40),
-                          ),
-                          child: const Text('Save changes'),
-                        onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/profile');
-                            /*
-                          if (_formKey.currentState!.validate()) {
-                            // TODO: Implement save changes logic
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Processing Data')),
-                            );
-                          }*/
-                        },
-                      ),
+                    CupertinoButton.filled(
+                      child: const Text('Save changes'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-          bottomNavigationBar: CustomBottomNavBar(
-            currentIndex: 3,
-            onTap: (index) {
-              if (index == 0) {
-                Navigator.pushReplacementNamed(context, '/home');
-              } else if (index == 1) {
-                Navigator.pushReplacementNamed(context, '/record');
-              } else if (index == 2) {
-                Navigator.pushReplacementNamed(context, '/activity');
-              } else if (index == 3) {
-                Navigator.pushReplacementNamed(context, '/profile');
-              }
-            },
           ),
         );
       },
@@ -168,41 +137,23 @@ class _Profile2PageState extends State<Profile2Page> {
 
   Widget _buildTextField({
     required TextEditingController controller,
-    required IconData icon,
-    required String label,
+    required String placeholder,
     bool obscureText = false,
     TextInputType? keyboardType,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+    return CupertinoTextField(
+      controller: controller,
+      placeholder: placeholder,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      style: const TextStyle(
+        inherit: true,
+        color: CupertinoColors.black,
       ),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: Colors.grey),
-          hintText: label,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter $label';
-          }
-          if (label.toLowerCase().contains('email') &&
-              !value.contains('@')) {
-            return 'Please enter a valid email';
-          }
-          if (label == 'Password Again' &&
-              value != _passwordController.text) {
-            return 'Passwords do not match';
-          }
-          return null;
-        },
+      decoration: BoxDecoration(
+        color: CupertinoColors.systemGrey6,
+        borderRadius: BorderRadius.circular(8),
       ),
     );
   }

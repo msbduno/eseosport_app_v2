@@ -25,19 +25,19 @@ Activity({
   required this.user,
   this.activityType = 'Bike',
 }) : distance = double.parse(distance.toStringAsFixed(3));
-  String get formattedDuration {
-    final hours = duration ~/ 3600;
-    final minutes = (duration % 3600) ~/ 60;
-    final seconds = duration % 60;
+String get formattedDuration {
+  final hours = duration ~/ 3600;
+  final minutes = (duration % 3600) ~/ 60;
+  final seconds = duration % 60;
 
-    if (hours > 0) {
-      return '${hours.toString().padLeft(2, '0')}h ${minutes.toString().padLeft(2, '0')}m ${seconds.toString().padLeft(2, '0')}s';
-    } else if (minutes > 0) {
-      return '${minutes.toString().padLeft(2, '0')}m ${seconds.toString().padLeft(2, '0')}s';
-    } else {
-      return '${seconds.toString().padLeft(2, '0')}s';
-    }
+  if (hours > 0) {
+    return '${hours}h ${minutes}m ${seconds}s';
+  } else if (minutes > 0) {
+    return '${minutes}m ${seconds}s';
+  } else {
+    return '${seconds}s';
   }
+}
 
 
   Activity copyWith({

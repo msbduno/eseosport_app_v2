@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:eseosport_app/data/models/user_model.dart';
@@ -6,11 +7,11 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/activity_model.dart';
 import '../../../data/repositories/bluetooth_repository.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../viewmodels/live_data_viewmodel.dart';
 import '../../widgets/circle_button.dart';
 import '../../widgets/data_column.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../viewmodels/live_data_viewmodel.dart';
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -179,95 +180,54 @@ class _RecordPageState extends State<RecordPage> {
     });
   }
 
-  void _testBluetoothConnection() {
-    showDialog(
+
+  void _showBluetoothDialog() {
+    showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return Consumer<BluetoothRepository>(
+          builder: (context, bluetoothRepo, child) {
+            return CupertinoAlertDialog(
+              title: const Text('Bluetooth Connection'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Bluetooth Connection',
-                    style: TextStyle(color: Colors.black, fontSize: 20),
-                  ),
-                  IconButton(
-                      icon: const Icon(Icons.close),
-                      color: Colors.red,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        FlutterBluePlus.stopScan();
-                      }
-                  ),
+                  if (bluetoothRepo.isScanning)
+                    Padding(
+  padding: const EdgeInsets.symmetric(vertical: 20.0), // Adjust the value as needed
+  child: const CupertinoActivityIndicator(),
+)
+                  else ...[
+                    const SizedBox(height: 10),
+                  Icon(
+                      bluetoothRepo.isConnected
+                          ? CupertinoIcons.bluetooth
+                          : CupertinoIcons.nosign,
+                      color: bluetoothRepo.isConnected
+                          ? AppTheme.primaryColor
+                          : CupertinoColors.systemGrey,
+                      size: 50,
+                    ),
+                  ],
+                  const SizedBox(height: 10),
+                  Text(bluetoothRepo.isConnected
+                      ? 'Connected successfully!'
+                      : 'No device found'),
                 ],
               ),
-              content: Consumer<BluetoothRepository>(
-                builder: (context, bluetoothRepo, child) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (bluetoothRepo.isScanning)
-                        const Column(
-                          children: [
-                            CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor)
-                            ),
-                            SizedBox(height: 10),
-                            Text('Scanning for Bluetooth device...'),
-                          ],
-                        )
-                      else
-                        Column(
-                          children: [
-                            Icon(
-                              bluetoothRepo.isConnected
-                                  ? Icons.bluetooth_connected
-                                  : Icons.bluetooth_disabled,
-                              color: bluetoothRepo.isConnected
-                                  ? AppTheme.primaryColor
-                                  : Colors.grey,
-                              size: 50,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              bluetoothRepo.isConnected
-                                  ? 'Bluetooth device connected successfully!'
-                                  : 'No Bluetooth device found. Please check your device.',
-                              textAlign: TextAlign.center,
-                            )
-                          ],
-                        ),
-                    ],
-                  );
-                },
-              ),
               actions: [
-                Consumer<BluetoothRepository>(
-                  builder: (context, bluetoothRepo, child) {
-                    return bluetoothRepo.isScanning
-                        ? TextButton(
-                      onPressed: () {
-                        FlutterBluePlus.stopScan();
-                        bluetoothRepo.stopScan();
-                      },
-                      child: const Text(
-                        'Stop Scan',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    )
-                        : TextButton(
-                      onPressed: () async {
-                        await bluetoothRepo.startScan();
-                      },
-                      child: const Text(
-                        'Scan Again',
-                        style: TextStyle(color: AppTheme.primaryColor),
-                      ),
-                    );
+                CupertinoDialogAction(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                CupertinoDialogAction(
+                  onPressed: () async {
+                    bluetoothRepo.isScanning
+                        ? bluetoothRepo.stopScan()
+                        : await bluetoothRepo.startScan();
                   },
-                )
+                  child: Text(bluetoothRepo.isScanning ? 'Stop Scan' : 'Scan'),
+                ),
               ],
             );
           },
@@ -280,142 +240,138 @@ class _RecordPageState extends State<RecordPage> {
   Widget build(BuildContext context) {
     final liveDataVM = Provider.of<LiveDataViewModel>(context);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text('Record'),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: const Icon(CupertinoIcons.bluetooth),
+          onPressed: _showBluetoothDialog,
+        ),
+      ),
+      child: SafeArea(
         child: FutureBuilder<UserModel?>(
           future: _userFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (snapshot.data == null) {
-              return const Center(child: Text('No user data available'));
-            } else {
-              final user = snapshot.data!;
-              _currentActivity?.user ??= user;
+              return const Center(child: CupertinoActivityIndicator());
+            }
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.settings_bluetooth, color: AppTheme.primaryColor),
-                        onPressed: _testBluetoothConnection,
-                      ),
-                    ],
-                  ),
-                  const Text(
-                    'TIME',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    _elapsedTime,
-                    style: const TextStyle(
-                      fontSize: 80,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10.0), // Reduced padding
-                            child: buildDataColumn(
-                              'SPEED',
-                              '${liveDataVM.currentSpeed.toStringAsFixed(1)}',
-                              'KM/H',
-                              fontSize: 24.0,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(2.0), // Reduced padding
-                            child: buildDataColumn(
-                              'DISTANCE',
-                              '${_cumulativeDistance.toStringAsFixed(1)}',
-                              'KILOMETERS',
-                              fontSize: 24.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 2), // Further reduced space between sections
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center, // Center the Row
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(20.0), // Reduced padding
-                            child: buildDataColumn(
-                              'ELEVATION',
-                              '${liveDataVM.currentAltitude?.toStringAsFixed(0) ?? "0"}',
-                              'METERS',
-                              fontSize: 24.0,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20.0), // Reduced padding
-                            child: buildDataColumn(
-                              'BPM',
-                              '${liveDataVM.currentBPM ?? "_ _"}',
-                              '',
-                              fontSize: 24.0,
-                            ),
-                          ),
-                          const SizedBox(width: 30),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CircleButton(
-                        onPressed: _cancelActivity,
-                        icon: Icons.close,
-                        color: Colors.grey,
-                      ),
-                      CircleButton(
-                        onPressed: _toggleRecording,
-                        icon: _isRecording ? Icons.stop : Icons.play_arrow,
-                        color: AppTheme.primaryColor,
-                        size: 70,
-                      ),
-                      CircleButton(
-                        onPressed: _saveActivityDetails,
-                        icon: Icons.arrow_forward_ios_outlined,
-                        color: AppTheme.primaryColor,
-                      ),
-                    ],
-                  ),
-                ],
+            if (snapshot.hasError || snapshot.data == null) {
+              return Center(
+                child: Text(snapshot.hasError
+                    ? 'Error: ${snapshot.error}'
+                    : 'No user data available'),
               );
             }
+
+            final user = snapshot.data!;
+            _currentActivity?.user ??= user;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 50),
+                const Text(
+                  'TIME',
+                  style: TextStyle(
+                    color: CupertinoColors.systemGrey,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  _elapsedTime,
+                  style: const TextStyle(
+                    fontSize: 80,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 50),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(width: 60),
+                    buildDataColumn(
+                      'SPEED',
+                      '${liveDataVM.currentSpeed.toStringAsFixed(1)}',
+                      'KM/H',
+                      fontSize: 24.0,
+                    ),
+                    const SizedBox(width: 50),
+                    buildDataColumn(
+                      'DISTANCE',
+                      '${_cumulativeDistance.toStringAsFixed(1)}',
+                      'KILOMETERS',
+                      fontSize: 24.0,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(width: 40),
+                    buildDataColumn(
+                      'ELEVATION',
+                      '${liveDataVM.currentAltitude?.toStringAsFixed(0) ?? "0"}',
+                      'METERS',
+                      fontSize: 24.0,
+                    ),
+                    const SizedBox(width: 45),
+                    buildDataColumn(
+                      'BPM',
+                      '${liveDataVM.currentBPM ?? "_ _"}',
+                      '',
+                      fontSize: 24.0,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 50),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    CupertinoCircleButton(
+                      onPressed: _cancelActivity,
+                      icon: CupertinoIcons.clear_circled,
+                      color: CupertinoColors.systemGrey,
+                    ),
+                    CupertinoCircleButton(
+                      onPressed: _toggleRecording,
+                      icon: _isRecording
+                          ? CupertinoIcons.stop_circle
+                          : CupertinoIcons.play_circle,
+                      color: AppTheme.primaryColor,
+                      size: 70,
+                    ),
+                    CupertinoCircleButton(
+                      onPressed: _saveActivityDetails,
+                      icon: CupertinoIcons.arrow_right_circle,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                 // Add the custom bottom navigation bar
+                CustomCupertinoNavBar(
+                currentIndex: 1,
+            onTap: (index) {
+            switch (index) {
+            case 0:
+            Navigator.pushReplacementNamed(context, '/home');
+            break;
+            case 2:
+            Navigator.pushReplacementNamed(context, '/activity');
+            break;
+            case 3:
+            Navigator.pushReplacementNamed(context, '/profile');
+            break;
+            }
+            },
+            ),
+              ],
+            );
           },
         ),
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushReplacementNamed(context, '/home');
-          } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/activity');
-          } else if (index == 3) {
-            Navigator.pushReplacementNamed(context, '/profile');
-          }
-        },
       ),
     );
   }

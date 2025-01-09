@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:eseosport_app/presentation/views/activity/activities_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
+import '../home_page.dart';
+import '../record/record_page.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -12,107 +15,133 @@ class ProfilePage extends StatelessWidget {
 
         if (user == null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushReplacementNamed(context, '/signin');
+            Navigator.of(context).pushReplacementNamed('/signin');
           });
           return Container();
         }
 
-        return Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            //mettre à gauche le texte
-            centerTitle: false,
-            title: const Text(
-              'Profile',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            backgroundColor: Colors.white,
-            elevation: 0,
+        return CupertinoPageScaffold(
+          navigationBar: const CupertinoNavigationBar(
+            middle: Text('Profile'),
+            backgroundColor: CupertinoColors.white,
+            border: null,
           ),
-          backgroundColor: Colors.white,
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          backgroundColor: CupertinoColors.white,
+          child: SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 20),
-                // Box profil utilisateur
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/profile2');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.grey.shade100,
-                          child: const Icon(Icons.person_outline, color: Colors.grey),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          '${user.nom} ${user.prenom}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      // Box profil utilisateur
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/profile2');
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: CupertinoColors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: CupertinoColors.systemGrey4),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: CupertinoColors.systemGrey6,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  CupertinoIcons.person,
+                                  color: CupertinoColors.systemGrey,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                '${user.nom} ${user.prenom}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Box déconnexion
+                      GestureDetector(
+                        onTap: () async {
+                          await authViewModel.logout();
+                          Navigator.of(context).pushReplacementNamed('/signin');
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: CupertinoColors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: CupertinoColors.systemGrey4),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(
+                                CupertinoIcons.square_arrow_right,
+                                color: CupertinoColors.systemGrey,
+                              ),
+                              SizedBox(width: 12),
+                              Text(
+                                'Log Out',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                // Box déconnexion
-                InkWell(
-                  onTap: () async {
-                    await authViewModel.logout();
-                    Navigator.pushReplacementNamed(context, '/signin');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.logout, color: Colors.grey),
-                        SizedBox(width: 12),
-                        Text(
-                          'Log Out',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                const Spacer(),
+                CustomCupertinoNavBar(
+                  currentIndex: 3,
+                  onTap: (index) {
+                    switch (index) {
+                      case 1:
+                        Navigator.of(context).pushAndRemoveUntil(
+                          CupertinoPageRoute(
+                            builder: (context) => const RecordPage(),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
+                          (route) => false,
+                        );
+                        break;
+                      case 0:
+                        Navigator.of(context).pushAndRemoveUntil(
+                          CupertinoPageRoute(
+                            builder: (context) => HomePage(),
+                          ),
+                          (route) => false,
+                        );
+                        break;
+                      case 2:
+                        Navigator.of(context).pushAndRemoveUntil(
+                          CupertinoPageRoute(
+                            builder: (context) => ActivitiesPage(),
+                          ),
+                          (route) => false,
+                        );
+                        break;
+                    }
+                  },
                 ),
               ],
             ),
-          ),
-          bottomNavigationBar: CustomBottomNavBar(
-            currentIndex: 3,
-            onTap: (index) {
-              if (index == 0) {
-                Navigator.pushReplacementNamed(context, '/home');
-              } else if (index == 1) {
-                Navigator.pushReplacementNamed(context, '/record');
-              } else if (index == 2) {
-                Navigator.pushReplacementNamed(context, '/activity');
-              } else if (index == 3) {
-                Navigator.pushReplacementNamed(context, '/profile');
-              }
-            },
           ),
         );
       },

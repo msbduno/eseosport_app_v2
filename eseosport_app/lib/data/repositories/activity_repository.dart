@@ -3,13 +3,11 @@ import 'package:http/http.dart' as http;
 import '../models/activity_model.dart';
 
 class ActivityRepository {
-  //final String apiUrl = 'http://localhost:8080/api';// For iOS simulator
-  //final String apiUrl  = 'http://10.0.2.2:8080/api';// For Android emulator
-  final String apiUrl = 'http://172.23.2.52:8080/api';  // For physical devices
-  // tcheck the ip address with :ipconfig getifaddr en0
+  final String apiUrl = 'https://f2a7-77-158-156-138.ngrok-free.app/api';
 
   Future<void> saveActivity(Activity activity) async {
     final url = Uri.parse('$apiUrl/activities');
+
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -68,4 +66,5 @@ class ActivityRepository {
     }
     throw Exception(errorMessage);
   }
+
 }

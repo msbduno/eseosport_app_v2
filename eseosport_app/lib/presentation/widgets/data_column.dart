@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 Widget buildDataColumn(String label, String value, String unit, {double fontSize = 16.0}) {
   return Padding(
@@ -10,7 +9,7 @@ Widget buildDataColumn(String label, String value, String unit, {double fontSize
         Text(
           label,
           style: TextStyle(
-            color: Colors.black54,
+            color: CupertinoColors.systemGrey,
             fontSize: fontSize,
           ),
         ),
@@ -24,7 +23,7 @@ Widget buildDataColumn(String label, String value, String unit, {double fontSize
         Text(
           unit,
           style: TextStyle(
-            color: Colors.black54,
+            color: CupertinoColors.systemGrey,
             fontSize: fontSize * 0.65,
           ),
         ),

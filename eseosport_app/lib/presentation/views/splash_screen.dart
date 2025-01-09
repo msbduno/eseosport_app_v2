@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
+
 import '../../core/theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,9 +22,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CupertinoPageScaffold(
       backgroundColor: AppTheme.primaryColor,
-      body: Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -31,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
               style: TextStyle(
                 fontSize: 40,
                 fontWeight: FontWeight.w900,
-                color: Colors.white,
+                color: CupertinoColors.white,
                 letterSpacing: 1.1,
               ),
             ),

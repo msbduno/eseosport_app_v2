@@ -1,7 +1,8 @@
-import 'package:eseosport_app/data/models/user_model.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+
 import '../../../core/theme/app_theme.dart';
+import '../../../data/models/user_model.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 
 class LoginPage extends StatelessWidget {
@@ -9,146 +10,218 @@ class LoginPage extends StatelessWidget {
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: AppTheme.primaryColor,
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/signin');
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(height: 30),
-            const Text(
-              'Create an account',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 50),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Full Name',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.primaryColor),
-                ),
+    return CupertinoPageScaffold(
+      child: CustomScrollView(
+        slivers: <Widget>[
+          CupertinoSliverNavigationBar(
+            largeTitle: Text('Create your account',
+                style:
+                    TextStyle(color: CupertinoColors.systemGrey, fontSize: 30)),
+            leading: CupertinoButton(
+              padding: EdgeInsets.zero,
+              child: Icon(
+                CupertinoIcons.back,
+                color: CupertinoColors.systemGrey,
               ),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/signin');
+              },
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _surnameController,
-              decoration: const InputDecoration(
-                labelText: 'Surname',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.primaryColor),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Your Email',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.primaryColor),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.primaryColor),
-                ),
-              ),
-            ),
-            const SizedBox(height: 130),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: AppTheme.primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+          ),
+          SliverFillRemaining(
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(height: 20),
+                    CupertinoTextField(
+                      controller: _nameController,
+                      placeholder: 'Full Name',
+                      placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey,
                       ),
-                      minimumSize: const Size(350, 40),
+                      style: TextStyle(color: CupertinoColors.systemGrey),
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: CupertinoColors.systemGrey),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
                     ),
-                    child: const Text('Sign Up'),
-                    onPressed: () async {
-
-                      UserModel user = UserModel(
-                        nom: _nameController.text,
-                        prenom: _surnameController.text,
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                      );
-
-                      await authViewModel.register(user
-                      );
-                      if (authViewModel.errorMessage == null) {
-                        Navigator.pushReplacementNamed(context, '/home');
-                      } else {
-                        // Handle error
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: const Text(
-                            'An error occurred. Please try again.',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                            backgroundColor: AppTheme.primaryColor,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Already have an account ?', style: TextStyle(color: Colors.grey)),
-                      TextButton(
-                        child: const Text(
-                          'Sign In',
-                          style: TextStyle(color: AppTheme.primaryColor),
-                        ),
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/signin');
-                        },
+                    const SizedBox(height: 10),
+                    CupertinoTextField(
+                      controller: _surnameController,
+                      placeholder: 'Surname',
+                      placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey,
                       ),
-                    ],
-                  ),
-                ],
+                      style: TextStyle(color: CupertinoColors.systemGrey),
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: CupertinoColors.systemGrey),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    CupertinoTextField(
+                      controller: _emailController,
+                      placeholder: 'Email',
+                      placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey,
+                      ),
+                      style: TextStyle(color: CupertinoColors.systemGrey),
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: CupertinoColors.systemGrey),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    CupertinoTextField(
+                      controller: _passwordController,
+                      placeholder: 'Password',
+                      placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey,
+                      ),
+                      style: TextStyle(color: CupertinoColors.systemGrey),
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: CupertinoColors.systemGrey),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    CupertinoTextField(
+                      controller: _confirmPasswordController,
+                      placeholder: 'Confirm Password',
+                      placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey,
+                      ),
+                      style: TextStyle(color: CupertinoColors.systemGrey),
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: CupertinoColors.systemGrey),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    const SizedBox(height: 110),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CupertinoButton(
+                            color: AppTheme.primaryColor,
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12.0, horizontal: 50.0),
+                            child: const Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                color: CupertinoColors
+                                    .white, // Change this color as needed
+                              ),
+                            ),
+                            onPressed: () async {
+                              if (_emailController.text.isEmpty ||
+                                  _passwordController.text.isEmpty) {
+                                showCupertinoDialog(
+                                  context: context,
+                                  builder: (context) => CupertinoAlertDialog(
+                                    title: const Text('Error'),
+                                    content: const Text(
+                                        'Email and password cannot be empty.'),
+                                    actions: [
+                                      CupertinoDialogAction(
+                                        child: const Text('OK'),
+                                        onPressed: () => Navigator.pop(context),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                return;
+                              }
+
+                              if (_passwordController.text !=
+                                  _confirmPasswordController.text) {
+                                showCupertinoDialog(
+                                  context: context,
+                                  builder: (context) => CupertinoAlertDialog(
+                                    title: const Text('Error'),
+                                    content: const Text(
+                                        'Passwords do not match. Please try again.'),
+                                    actions: [
+                                      CupertinoDialogAction(
+                                        child: const Text('OK'),
+                                        onPressed: () => Navigator.pop(context),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                return;
+                              }
+
+                              bool loginSuccess = await authViewModel.login(
+                                _emailController.text,
+                                _passwordController.text,
+                              );
+                              if (loginSuccess) {
+                                Navigator.pushReplacementNamed(
+                                    context, '/home');
+                              } else {
+                                showCupertinoDialog(
+                                  context: context,
+                                  builder: (context) => CupertinoAlertDialog(
+                                    title: const Text('Login Failed'),
+                                    content: const Text(
+                                        'Please check your credentials.'),
+                                    actions: [
+                                      CupertinoDialogAction(
+                                        child: const Text('OK'),
+                                        onPressed: () => Navigator.pop(context),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Already have an account ?',
+                                style: TextStyle(
+                                    color: CupertinoColors.systemGrey),
+                              ),
+                              CupertinoButton(
+                                child: Text(
+                                  'Sign In',
+                                  style:
+                                      TextStyle(color: AppTheme.primaryColor),
+                                ),
+                                onPressed: () {
+                                  Navigator.pushReplacementNamed(
+                                      context, '/signin');
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

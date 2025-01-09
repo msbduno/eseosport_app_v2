@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../../core/theme/app_theme.dart';
 
-class CustomBottomNavBar extends StatelessWidget {
+class CustomCupertinoNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
 
-  const CustomBottomNavBar({
+  const CustomCupertinoNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
@@ -13,20 +13,38 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
+    return CupertinoTabBar(
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: 'Record'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Activity'), // New Profile item
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        BottomNavigationBarItem(
+          icon: Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Icon(CupertinoIcons.home),
+          ),
+        ),
+        BottomNavigationBarItem(
+          icon: Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Icon(CupertinoIcons.add_circled),
+          ),
+        ),
+        BottomNavigationBarItem(
+          icon: Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Icon(CupertinoIcons.graph_square),
+          ),
+        ),
+        BottomNavigationBarItem(
+          icon: Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Icon(CupertinoIcons.person),
+          ),
+        ),
       ],
       currentIndex: currentIndex,
       onTap: onTap,
-      selectedItemColor: AppTheme.primaryColor,
-      unselectedItemColor: Colors.grey, // Set unselected item color
-      backgroundColor: Colors.white, // Set background color to white
-      type: BottomNavigationBarType.fixed, // Set type to fixed
-      elevation: 0, // Remove the grey bar at the top
+      activeColor: AppTheme.primaryColor,
+      inactiveColor: CupertinoColors.systemGrey,
+      backgroundColor: CupertinoColors.white,
     );
   }
 }

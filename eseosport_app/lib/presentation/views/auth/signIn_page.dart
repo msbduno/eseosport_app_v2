@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+
 import '../../../core/theme/app_theme.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 
@@ -11,101 +12,100 @@ class SignInPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
 
-    return Scaffold(
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(height: 30),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15.0),
-                    child: Image.asset(
-                      "assets/logo.png",
-                      width: 80,
-                      height: 80,
+    return CupertinoPageScaffold(
+      child: CustomScrollView(
+        slivers: <Widget>[
+          CupertinoSliverNavigationBar(
+            largeTitle: Text('Sign in to your account', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 30)),
+          ),
+          SliverFillRemaining(
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15.0),
+                            child: Image.asset(
+                              "assets/logo.png",
+                              width: 80,
+                              height: 80,
+                            ),
+                          ),
+                          // ... logo section ...
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 120,
-                        height: 1,
-                        color: Colors.grey,
+                    const SizedBox(height: 80),
+                    CupertinoTextField(
+  controller: _emailController,
+  placeholder: 'Your Email',
+  placeholderStyle: TextStyle(
+    color: CupertinoColors.systemGrey,
+  ),
+  style: TextStyle(
+    color: CupertinoColors.systemGrey // Change this color as needed
+  ),
+  padding: const EdgeInsets.all(16.0),
+  decoration: BoxDecoration(
+    border: Border.all(color: CupertinoColors.systemGrey),
+    borderRadius: BorderRadius.circular(5.0),
+  ),
+),
+                    const SizedBox(height: 10),
+                    CupertinoTextField(
+                      controller: _passwordController,
+                      placeholder: 'Password',
+                      placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey,
                       ),
-                      const Text(
-                        '    BY    ',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
+                      style: TextStyle(
+                          color: CupertinoColors.systemGrey // Change this color as needed
                       ),
-                      Container(
-                        width: 120,
-                        height: 1,
-                        color: Colors.grey,
+                      obscureText: true,
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: CupertinoColors.systemGrey),
+                        borderRadius: BorderRadius.circular(5.0),
                       ),
-                    ],
-                  ),
-                  Image.asset(
-                    "assets/ESEO-logo-gris-positif.png",
-                    width: 150,
-                    height: 105,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 30),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Your Email',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.primaryColor),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.primaryColor),
-                ),
-              ),
-            ),
-            const SizedBox(height: 80),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: AppTheme.primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      minimumSize: const Size(350, 40),
                     ),
-                    child: const Text('Sign In'),
-                    onPressed: () async {
+                    const SizedBox(height: 150),
+                    Center(
+                      child: Column(
+                        children: [
+                          CupertinoButton(
+                            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 50.0),
+                            color: AppTheme.primaryColor,
+                            child: const Text(
+                              'Sign In',
+                              style: TextStyle(
+                                color: CupertinoColors.white, // Change this color as needed
+                              ),
+                            ),
+                            onPressed: () async {
+  if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Error'),
+        content: const Text('Email and password cannot be empty.'),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+    return;
+  }
+
   bool loginSuccess = await authViewModel.login(
     _emailController.text,
     _passwordController.text,
@@ -113,39 +113,50 @@ class SignInPage extends StatelessWidget {
   if (loginSuccess) {
     Navigator.pushReplacementNamed(context, '/home');
   } else {
-    // Handle error
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Failed to login. Please check your credentials.',
-          style: TextStyle(color: AppTheme.backgroundColor),
-        ),
-        backgroundColor: AppTheme.primaryColor,
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Login Failed'),
+        content: const Text('Please check your credentials.'),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
     );
   }
 },
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Do not have an account ?', style: TextStyle(color: Colors.grey)),
-                      TextButton(
-                        child: const Text(
-                          'Register',
-                          style: TextStyle(color: AppTheme.primaryColor),
-                        ),
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/login');
-                        },
+                          ),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Do not have an account ?',
+                                style: TextStyle(color: CupertinoColors.systemGrey),
+                              ),
+                              CupertinoButton(
+                                child: Text(
+                                  'Sign Up',
+                                  style: TextStyle(color: AppTheme.primaryColor),
+                                ),
+                                onPressed: () {
+                                  Navigator.pushReplacementNamed(context, '/login');
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

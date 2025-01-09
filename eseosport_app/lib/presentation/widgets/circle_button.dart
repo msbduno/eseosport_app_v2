@@ -1,26 +1,37 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
-import '../../core/theme/app_theme.dart';
+class CupertinoCircleButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final IconData? icon;
+  final Color color;
+  final double size;
 
-Widget CircleButton({
-  required VoidCallback onPressed,
-IconData ?icon,
-  required Color color,
-  double size = 50,
+  const CupertinoCircleButton({
+    Key? key,
+    required this.onPressed,
+    this.icon,
+    required this.color,
+    this.size = 50,
+  }) : super(key: key);
 
-}) {
-  return Container(
-    height: size,
-    width: size,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: color,
-    ),
-    child: IconButton(
-      icon: Icon(icon, color: AppTheme.backgroundColor),
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
       onPressed: onPressed,
-      iconSize: size * 0.5,
-    ),
-  );
+      child: Container(
+        height: size,
+        width: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+        ),
+        child: Icon(
+          icon,
+          color: CupertinoColors.white,
+          size: size * 0.5,
+        ),
+      ),
+    );
+  }
 }

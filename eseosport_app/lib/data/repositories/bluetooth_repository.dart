@@ -143,7 +143,7 @@ class BluetoothRepository extends ChangeNotifier {
 
   @override
   void dispose() {
-    print('🧹 Nettoyage des ressources Bluetooth');
+    print(' Nettoyage des ressources Bluetooth');
     _dataController.close();
     disconnectDevice();
     super.dispose();

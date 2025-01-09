@@ -14,32 +14,40 @@ class ActivityViewModel extends ChangeNotifier {
 
   ActivityViewModel(this._activityRepository, this._authRepository) {
     _initializeUser();
-    fetchUserActivities();
- }
-
-
+  }
 
   List<Activity> get activities => _activities;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+
+  Future<void> refreshUserActivities() async {
+    _currentUserId = await _authRepository.getCachedUserId();
+    await fetchUserActivities();
+  }
+
+
   Future<void> _initializeUser() async {
     try {
-      _currentUserId = await _authRepository.getCachedUserId();
-      if (_currentUserId != null) {
-        await fetchUserActivities();
-      } else {
+      UserModel? cachedUser = await _authRepository.getCachedUser();
+      if (cachedUser == null) {
         throw Exception('No authenticated user found');
       }
+      _currentUserId = cachedUser.id;
     } catch (e) {
       _errorMessage = 'Error initializing user: $e';
+      _currentUserId = null;
+      _activities = [];
       notifyListeners();
     }
   }
 
   Future<void> fetchUserActivities() async {
+
     if (_currentUserId == null) {
+      print('No user ID found');
       _errorMessage = 'User not authenticated';
+      _activities = [];
       notifyListeners();
       return;
     }
@@ -50,8 +58,13 @@ class ActivityViewModel extends ChangeNotifier {
 
     try {
       _activities = await _activityRepository.getActivitiesByUserId(_currentUserId!);
+
+      if (_activities.isEmpty) {
+        _errorMessage = 'No activities found for this user';
+      }
     } catch (e) {
       _errorMessage = 'Error loading activities: $e';
+      _activities = [];
       print(_errorMessage);
     } finally {
       _isLoading = false;
@@ -61,18 +74,23 @@ class ActivityViewModel extends ChangeNotifier {
 
   Future<void> saveActivity(Activity activity) async {
     try {
-      if (_currentUserId == null || _currentUserId! <= 0) {
-        throw Exception('User not authenticated');
-      }
       UserModel? user = await _authRepository.getCachedUser();
-      activity = activity.copyWith(user: user);
-      await _activityRepository.saveActivity(activity);
-      await fetchUserActivities(); // Update the list of activities
+      if (user == null) {
+        throw Exception('No authenticated user found');
+      }
+
+      Activity newActivity = activity.copyWith(
+        user: user,
+        idActivity: 0
+      );
+
+      await _activityRepository.saveActivity(newActivity);
+      await fetchUserActivities();
     } catch (e) {
       _errorMessage = 'Error saving activity: $e';
-      print(_errorMessage);
+      print('Full error details: $e');
       notifyListeners();
-      throw e;
+      rethrow;
     }
   }
 
@@ -87,6 +105,13 @@ class ActivityViewModel extends ChangeNotifier {
       notifyListeners();
       throw e;
     }
+  }
+
+  void clearActivities() {
+    _activities = [];
+    _currentUserId = null;
+    _errorMessage = null;
+    notifyListeners();
   }
 }
 /*class MockActivityViewModel extends ChangeNotifier {
