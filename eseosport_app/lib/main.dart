@@ -79,7 +79,7 @@ class _MyAppState extends State<MyApp> {
           '/login': (context) => LoginPage(),
           '/signin': (context) => SignInPage(),
           '/profile': (context) => ProfilePage(),
-          '/profile2': (context) => const Profile2Page(),
+          '/profile2': (context) => Profile2Page(),
         },
       ),
     );

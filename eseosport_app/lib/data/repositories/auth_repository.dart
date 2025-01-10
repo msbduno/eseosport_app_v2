@@ -7,7 +7,7 @@ final String apiUrl = 'http://localhost:8080/api'; // For iOS simulator
 //final String apiUrl = 'http://192.168.1.168:8080/api';  // Updated to include port 8080
 
 class AuthRepository {
-  final String apiUrl = 'https://f2a7-77-158-156-138.ngrok-free.app/api';
+  final String apiUrl = 'https://3a68-77-158-156-138.ngrok-free.app/api';
   Future<UserModel> login(String email, String password) async {
     try {
       final loginResponse = await http.post(
@@ -89,4 +89,25 @@ class AuthRepository {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_userKey);
   }
+  Future<UserModel> updateUser(UserModel user) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$apiUrl/users/${user.id}'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(user.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        final updatedUserData = json.decode(response.body);
+        final updatedUser = UserModel.fromJson(updatedUserData);
+        await _saveUserData(updatedUser);
+        return updatedUser;
+      }
+      throw Exception('Failed to update user: ${response.statusCode}');
+    } catch (e) {
+      print('Update user error: $e');
+      throw e;
+    }
+  }
+
 }

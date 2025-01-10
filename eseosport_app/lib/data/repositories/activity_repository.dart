@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/activity_model.dart';
 
 class ActivityRepository {
-  final String apiUrl = 'https://f2a7-77-158-156-138.ngrok-free.app/api';
+  final String apiUrl = 'https://3a68-77-158-156-138.ngrok-free.app/api';
 
   Future<void> saveActivity(Activity activity) async {
     final url = Uri.parse('$apiUrl/activities');

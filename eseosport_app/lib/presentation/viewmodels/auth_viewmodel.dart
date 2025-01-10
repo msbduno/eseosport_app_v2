@@ -71,4 +71,24 @@ class AuthViewModel extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
   }
+
+  Future<void> updateUser(UserModel updatedUser) async {
+    try {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+
+      final user = await _authRepository.updateUser(updatedUser);
+      _user = user;
+
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Update failed: ${e.toString()}';
+      notifyListeners();
+      throw e;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }
