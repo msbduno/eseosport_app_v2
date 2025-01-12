@@ -186,28 +186,9 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                       header: const Text('Add a comment'),
                       children: [
                         CupertinoTextField(
-                          placeholder: '',
+                          placeholder: ' Comment (optional)',
                           prefix: Padding(
                             padding: const EdgeInsets.only(left: 8.0),
-                            child: RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Comment : ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: CupertinoColors.black,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: '(optional)',
-                                    style: TextStyle(
-                                      color: CupertinoColors.systemGrey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                           ),
                           onChanged: (value) {
                             setState(() {
@@ -217,7 +198,7 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 40),
                     CupertinoButton.filled(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {

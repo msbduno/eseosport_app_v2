@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +28,10 @@ public class ActivityController {
     public ResponseEntity<Activity> saveActivity(@RequestBody Activity activity) {
         Optional<User> userOptional = userRepository.findById(activity.getUser().getId());
         if (userOptional.isPresent()) {
+            if (activity.getName() == null || activity.getName().trim().isEmpty()) {
+                activity.setName("Activity " + activity.getActivityType());
+            }
+
             activity.setUser(userOptional.get());
             Activity savedActivity = activityRepository.save(activity);
             return new ResponseEntity<>(savedActivity, HttpStatus.CREATED);
@@ -33,6 +39,7 @@ public class ActivityController {
             return ResponseEntity.badRequest().build();
         }
     }
+
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Activity>> getActivitiesByUserId(@PathVariable Long userId) {

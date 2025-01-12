@@ -75,11 +75,11 @@ class _RecordPageState extends State<RecordPage> {
         elevation: 0.0,
         averageSpeed: 0.0,
         averageBPM: 0,
-        name: activityName, // Assurez-vous que le nom est défini ici
-        user: UserModel(nom: "nom", prenom: "prenom", email: "email", password: "password"),
+        name: activityName,
+        user: UserModel(
+            nom: "nom", prenom: "prenom", email: "email", password: "password"),
       );
     });
-
 
     _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
@@ -119,7 +119,6 @@ class _RecordPageState extends State<RecordPage> {
         averageBPM: _liveDataVM.currentBPM ?? 0,
         user: _currentActivity!.user!,
         name: _currentActivity!.name,
-
       );
       //await ActivityRepository.saveActivity(finalActivity);
     }
@@ -142,7 +141,8 @@ class _RecordPageState extends State<RecordPage> {
 
       // Reset LiveDataViewModel to ensure all displayed values return to zero
       _liveDataVM = Provider.of<LiveDataViewModel>(context, listen: false);
-      _liveDataVM.resetData(); // You'll need to add this method to the LiveDataViewModel
+      _liveDataVM
+          .resetData(); // You'll need to add this method to the LiveDataViewModel
     });
 
     _stopwatch.stop();
@@ -155,7 +155,8 @@ class _RecordPageState extends State<RecordPage> {
 
   void _saveActivityDetails() {
     if (_currentActivity != null) {
-      Navigator.pushNamed(context, '/saveActivity', arguments: _currentActivity);
+      Navigator.pushNamed(context, '/saveActivity',
+          arguments: _currentActivity);
     } else {
       showCupertinoDialog(
         context: context,
@@ -194,7 +195,6 @@ class _RecordPageState extends State<RecordPage> {
     });
   }
 
-
   void _showBluetoothDialog() {
     showCupertinoDialog(
       context: context,
@@ -208,12 +208,12 @@ class _RecordPageState extends State<RecordPage> {
                 children: [
                   if (bluetoothRepo.isScanning)
                     Padding(
-  padding: const EdgeInsets.symmetric(vertical: 20.0), // Adjust the value as needed
-  child: const CupertinoActivityIndicator(),
-)
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: const CupertinoActivityIndicator(),
+                    )
                   else ...[
                     const SizedBox(height: 10),
-                  Icon(
+                    Icon(
                       bluetoothRepo.isConnected
                           ? CupertinoIcons.bluetooth
                           : CupertinoIcons.nosign,
@@ -232,7 +232,8 @@ class _RecordPageState extends State<RecordPage> {
               actions: [
                 CupertinoDialogAction(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: CupertinoColors.systemGrey)),
                 ),
                 CupertinoDialogAction(
                   onPressed: () async {
@@ -347,7 +348,7 @@ class _RecordPageState extends State<RecordPage> {
                     CupertinoCircleButton(
                       onPressed: _cancelActivity,
                       icon: CupertinoIcons.clear_circled,
-                      color: CupertinoColors.systemGrey,
+                      color: CupertinoColors.systemGrey4,
                     ),
                     CupertinoCircleButton(
                       onPressed: _toggleRecording,
@@ -365,23 +366,23 @@ class _RecordPageState extends State<RecordPage> {
                   ],
                 ),
                 const Spacer(),
-                 // Add the custom bottom navigation bar
+                // Add the custom bottom navigation bar
                 CustomCupertinoNavBar(
-                currentIndex: 1,
-            onTap: (index) {
-            switch (index) {
-            case 0:
-            Navigator.pushReplacementNamed(context, '/home');
-            break;
-            case 2:
-            Navigator.pushReplacementNamed(context, '/activity');
-            break;
-            case 3:
-            Navigator.pushReplacementNamed(context, '/profile');
-            break;
-            }
-            },
-            ),
+                  currentIndex: 1,
+                  onTap: (index) {
+                    switch (index) {
+                      case 0:
+                        Navigator.pushReplacementNamed(context, '/home');
+                        break;
+                      case 2:
+                        Navigator.pushReplacementNamed(context, '/activity');
+                        break;
+                      case 3:
+                        Navigator.pushReplacementNamed(context, '/profile');
+                        break;
+                    }
+                  },
+                ),
               ],
             );
           },

@@ -18,6 +18,9 @@ public class Activity {
     @Column(nullable = false)
     private LocalDateTime date;
 
+    @Column(nullable = false)
+    private String name;
+
     private Integer duration;
     private Double distance;
     private Double elevation;

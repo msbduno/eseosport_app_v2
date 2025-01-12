@@ -30,6 +30,7 @@ public class ActivityService {
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 
         activity.setDate(activityDetails.getDate());
+        activity.setName(activityDetails.getName());
         activity.setDuration(activityDetails.getDuration());
         activity.setDistance(activityDetails.getDistance());
         activity.setElevation(activityDetails.getElevation());
