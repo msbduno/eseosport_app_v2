@@ -11,20 +11,23 @@ class Activity {
   final String? comment;
   late final UserModel? user;
   final String activityType;
+   String name;
 
 
-Activity({
-  required this.idActivity,
-  required this.date,
-  required this.duration,
-  required double distance,
-  required this.elevation,
-  required this.averageSpeed,
-  required this.averageBPM,
-  this.comment,
-  required this.user,
-  this.activityType = 'Bike',
-}) : distance = double.parse(distance.toStringAsFixed(3));
+
+  Activity({
+    required this.idActivity,
+    required this.date,
+    required this.duration,
+    required double distance,
+    required this.elevation,
+    required this.averageSpeed,
+    required this.averageBPM,
+    this.comment,
+    required this.name,
+    required this.user,
+    this.activityType = 'Bike',
+  }) : distance = double.parse(distance.toStringAsFixed(3));
 String get formattedDuration {
   final hours = duration ~/ 3600;
   final minutes = (duration % 3600) ~/ 60;
@@ -51,6 +54,7 @@ String get formattedDuration {
     String? comment,
     UserModel? user,
     String? activityType,
+    String? name,
   }) {
     return Activity(
       idActivity: idActivity ?? this.idActivity,
@@ -63,6 +67,7 @@ String get formattedDuration {
       comment: comment ?? this.comment,
       user: user ?? this.user,
       activityType: activityType ?? this.activityType,
+      name: name ?? this.name,
     );
   }
 
@@ -78,6 +83,7 @@ String get formattedDuration {
       'comment': comment,
       'user': user?.toJson(),
       'activityType': activityType,
+      'name': name,
     };
   }
 
@@ -91,8 +97,10 @@ String get formattedDuration {
       averageSpeed: json['averageSpeed'] as double,
       averageBPM: json['averageBPM'] as int,
       comment: json['comment'],
+      name: json['name'] as String? ?? 'Activity ${DateTime.now().millisecondsSinceEpoch}',
+      user: json['user'] != null ? UserModel.fromJson(json['user']) : null,
       activityType: json['activityType'] as String? ?? 'Bike',
-      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
     );
   }
+
 }

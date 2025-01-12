@@ -24,7 +24,8 @@ class _Profile2PageState extends State<Profile2Page> {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
     final user = authViewModel.user;
 
-    _nameController = TextEditingController(text: '${user?.nom} ${user?.prenom}');
+    _nameController =
+        TextEditingController(text: '${user?.nom} ${user?.prenom}');
     _emailController = TextEditingController(text: user?.email);
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
@@ -63,7 +64,8 @@ class _Profile2PageState extends State<Profile2Page> {
     try {
       final nameParts = _nameController.text.split(' ');
       final String nom = nameParts.first;
-      final String prenom = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+      final String prenom =
+          nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
       final updatedUser = UserModel(
         id: currentUser.id,
@@ -120,11 +122,11 @@ class _Profile2PageState extends State<Profile2Page> {
             border: null,
             // chevron back
             leading: CupertinoNavigationBarBackButton(
-  previousPageTitle: 'Profile',
-  onPressed: () {
-    Navigator.pop(context);
-  },
-),
+              previousPageTitle: 'Profile',
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
           child: SafeArea(
             child: SingleChildScrollView(
@@ -133,7 +135,7 @@ class _Profile2PageState extends State<Profile2Page> {
                   const SizedBox(height: 40),
                   CupertinoFormSection.insetGrouped(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
-                  header: const Text('CHANGE USER DETAILS'),
+                    header: const Text('CHANGE USER DETAILS'),
                     backgroundColor: CupertinoColors.systemBackground,
                     children: [
                       _buildFormRow(
@@ -188,8 +190,10 @@ class _Profile2PageState extends State<Profile2Page> {
                             ? null
                             : () => _saveChanges(context, user),
                         child: _isSaving
-                            ? const CupertinoActivityIndicator(color: CupertinoColors.white)
-                            : const Text('Save Changes', style: TextStyle(color: CupertinoColors.white)),
+                            ? const CupertinoActivityIndicator(
+                                color: CupertinoColors.white)
+                            : const Text('Save Changes',
+                                style: TextStyle(color: CupertinoColors.white)),
                       ),
                     ),
                   ),
@@ -203,32 +207,43 @@ class _Profile2PageState extends State<Profile2Page> {
   }
 
   Widget _buildFormRow(
-      String label,
-      TextEditingController controller, {
-        String? placeholder,
-        bool isPassword = false,
-        TextInputType? keyboardType,
-        Widget? prefix,
-      }) {
-    return CupertinoFormRow(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          if (prefix != null) ...[
-            prefix,
-            const SizedBox(width: 12),
-          ],
-          Expanded(
-            child: CupertinoTextField.borderless(
-              controller: controller,
-              placeholder: placeholder,
-              obscureText: isPassword,
-              keyboardType: keyboardType,
-              padding: EdgeInsets.zero,
-            ),
-          ),
+  String label,
+  TextEditingController controller, {
+  String? placeholder,
+  bool isPassword = false,
+  TextInputType? keyboardType,
+  Widget? prefix,
+}) {
+  return CupertinoFormRow(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    child: Row(
+      children: [
+        if (prefix != null) ...[
+          prefix,
+          const SizedBox(width: 12),
         ],
-      ),
-    );
-  }
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  color: CupertinoColors.systemGrey, // Change the color here
+                ),
+              ),
+              CupertinoTextField.borderless(
+                controller: controller,
+                placeholder: placeholder,
+                obscureText: isPassword,
+                keyboardType: keyboardType,
+                padding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }

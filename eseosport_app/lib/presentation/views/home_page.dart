@@ -82,8 +82,10 @@ class _HomePageState extends State<HomePage> {
                                 Text(
                                   "Weekly Report - Activities",
                                   style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: CupertinoColors.systemGrey,
+                                  ),
                                 ),
                                 SizedBox(
                                   height: 170,
@@ -140,9 +142,11 @@ class _HomePageState extends State<HomePage> {
                                                 Text(
                                                   "Last Activity",
                                                   style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: CupertinoColors
+                                                        .systemGrey,
+                                                  ),
                                                 ),
                                                 SizedBox(height: 20),
                                                 Center(
@@ -170,8 +174,10 @@ class _HomePageState extends State<HomePage> {
                                         return Text(
                                           "No activities found",
                                           style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: CupertinoColors.systemGrey,
+                                          ),
                                         );
                                       }
                                     },
@@ -196,18 +202,63 @@ class _HomePageState extends State<HomePage> {
                                   height: 125,
                                   width: 135,
                                   child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        "Weather / Pollution",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
+                                      GestureDetector(
+                                        onTap: () {
+                                          showCupertinoDialog(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                CupertinoAlertDialog(
+                                              title: const Text('Notice'),
+                                              content: const Text(
+                                                  'In development'),
+                                              actions: <Widget>[
+                                                CupertinoDialogAction(
+                                                  isDefaultAction: true,
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Weather ",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: CupertinoColors
+                                                    .systemGrey,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 25),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "5°C", // Example temperature
+                                                  style: TextStyle(
+                                                    fontSize: 24,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 20),
+                                                Icon(
+                                                  CupertinoIcons.cloud_sun,
+                                                  size: 44,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                      const SizedBox(height: 30),
-                                      Icon(
-                                        CupertinoIcons.cloud_sun,
-                                        size: 44,
                                       ),
                                     ],
                                   ),

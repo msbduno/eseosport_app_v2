@@ -15,34 +15,33 @@ class SignInPage extends StatelessWidget {
     return CupertinoPageScaffold(
       child: CustomScrollView(
         slivers: <Widget>[
-          CupertinoSliverNavigationBar(
-            largeTitle: Text('Sign in to your account', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 30)),
-          ),
+
           SliverFillRemaining(
             child: SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const SizedBox(height: 10),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(15.0),
-                            child: Image.asset(
-                              "assets/logo.png",
-                              width: 80,
-                              height: 80,
-                            ),
+                  children: <Widget>[Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const SizedBox(height: 60),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(15.0),
+                          child: Image.asset(
+                            "assets/logo.png",
+                            width: 80,
+                            height: 80,
                           ),
-                          // ... logo section ...
-                        ],
-                      ),
+                        ),
+                        // ... logo section ...
+                      ],
                     ),
-                    const SizedBox(height: 80),
+                  ),const SizedBox(height: 90),Text('Sign in to your account', style: TextStyle(color: CupertinoColors.systemGrey, fontSize: 30)),
+
+                    const SizedBox(height: 10),
+
                     CupertinoTextField(
   controller: _emailController,
   placeholder: 'Your Email',

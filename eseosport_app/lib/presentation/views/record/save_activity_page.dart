@@ -20,6 +20,11 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
   String? _activityType;
   String? _comment;
 
+  String _getDefaultActivityName() {
+    if (_activityType == null) return 'Select activity type first';
+    return ' ${_activityType!} activity';
+  }
+
   void _showErrorDialog(String message) {
     showCupertinoDialog(
       context: context,
@@ -41,7 +46,6 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
 
   @override
   void dispose() {
-    // Dispose of any controllers or listeners here
     super.dispose();
   }
 
@@ -81,7 +85,7 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
+                    // Activity Type Selection moved before name
                     CupertinoFormSection(
                       header: const Text('Activity Type'),
                       children: [
@@ -91,7 +95,7 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 if (_activityType != null) ...[
-                                  Icon(_getActivityIcon (_activityType!)),
+                                  Icon(_getActivityIcon(_activityType!)),
                                   const SizedBox(width: 20),
                                 ],
                                 DefaultTextStyle(
@@ -100,7 +104,8 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
-                                  child: Text(_activityType ?? 'Select Activity Type'),
+                                  child: Text(
+                                      _activityType ?? 'Select Activity Type'),
                                 ),
                               ],
                             ),
@@ -116,6 +121,8 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                                         onPressed: () {
                                           setState(() {
                                             _activityType = type;
+                                            widget.activity.name =
+                                                _getDefaultActivityName();
                                           });
                                           Navigator.pop(context);
                                         },
@@ -136,65 +143,81 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                         ),
                       ],
                     ),
-                          CupertinoFormSection(
-                            header: const Text('Activity Details'),
-                            children: [
-                              const SizedBox(height: 20),
-                              CupertinoListTile(
-                                title: Text('Durée: ${widget.activity.formattedDuration}'),
-                              ),
-                              CupertinoListTile(
-                                title: Text('Distance: ${widget.activity.distance.toStringAsFixed(3)} km'),
-                              ),
-                              CupertinoListTile(
-                                title: Text('Dénivelé: ${widget.activity.elevation} mètres'),
-                              ),
-                              CupertinoListTile(
-                                title: Text('Vitesse moyenne: ${widget.activity.averageSpeed} km/h'),
-                              ),
-                              CupertinoListTile(
-                                title: Text('Fréquence cardiaque moyenne: ${widget.activity.averageBPM} bpm'),
-                              ),
-                              const SizedBox(height: 20),
-                            ],
-                          ),
-                          CupertinoFormSection(
-                            header: const Text('Add a comment'),
-                            children: [
-                              const SizedBox(height: 20),
-                              CupertinoTextField(
-                                placeholder: '',
-                                prefix: Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: 'Comment : ',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: CupertinoColors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '(optional)',
-                                          style: TextStyle(
-                                            color: CupertinoColors.systemGrey,
-                                          ),
-                                        ),
-                                      ],
+                    // Activity Name Section with updated placeholder
+                    CupertinoFormSection(
+                      header: const Text('Activity Name'),
+                      children: [
+                        CupertinoTextField(
+                          placeholder: _getDefaultActivityName(),
+                          onChanged: (value) {
+                            setState(() {
+                              widget.activity.name = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    CupertinoFormSection(
+                      header: const Text('Activity Details'),
+                      children: [
+                        CupertinoListTile(
+                          title: Text(
+                              'Duration: ${widget.activity.formattedDuration}'),
+                        ),
+                        CupertinoListTile(
+                          title: Text(
+                              'Distance: ${widget.activity.distance.toStringAsFixed(3)} km'),
+                        ),
+                        CupertinoListTile(
+                          title: Text(
+                              'Elevation: ${widget.activity.elevation} meters'),
+                        ),
+                        CupertinoListTile(
+                          title: Text(
+                              'Average Speed: ${widget.activity.averageSpeed} km/h'),
+                        ),
+                        CupertinoListTile(
+                          title: Text(
+                              'Average BPM: ${widget.activity.averageBPM} bpm'),
+                        ),
+                      ],
+                    ),
+                    CupertinoFormSection(
+                      header: const Text('Add a comment'),
+                      children: [
+                        CupertinoTextField(
+                          placeholder: '',
+                          prefix: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Comment : ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: CupertinoColors.black,
                                     ),
                                   ),
-                                ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _comment = value;
-                                  });
-                                },
+                                  TextSpan(
+                                    text: '(optional)',
+                                    style: TextStyle(
+                                      color: CupertinoColors.systemGrey,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                          const SizedBox(height: 50),
+                          onChanged: (value) {
+                            setState(() {
+                              _comment = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 50),
                     CupertinoButton.filled(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
@@ -211,15 +234,17 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                           final updatedActivity = widget.activity.copyWith(
                             comment: _comment,
                             activityType: _activityType!,
+                            name: widget.activity.name,
                           );
 
                           try {
-                            await activityViewModel.saveActivity(updatedActivity);
+                            await activityViewModel
+                                .saveActivity(updatedActivity);
                             Navigator.of(context).pushAndRemoveUntil(
                               CupertinoPageRoute(
                                 builder: (context) => const ActivitiesPage(),
                               ),
-                                  (route) => false, // effacer la pile de navigation
+                              (route) => false,
                             );
                           } catch (e) {
                             _showErrorDialog('Error saving activity: $e');
@@ -228,13 +253,13 @@ class _SaveActivityPageState extends State<SaveActivityPage> {
                       },
                       child: const Text('Save Activity'),
                     ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
-            ],
+              ),
+            ),
           ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }

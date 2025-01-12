@@ -28,7 +28,7 @@ class ActivityDetailsPage extends StatelessWidget {
       navigationBar: CupertinoNavigationBar(
         backgroundColor: CupertinoColors.white,
         middle: const Text(
-          'Activities Details',
+          'Activity Details',
         ),
         leading: CupertinoNavigationBarBackButton(
           onPressed: () {
@@ -70,7 +70,7 @@ class ActivityDetailsPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Activity ${activity.idActivity}',
+                              activity.name,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -101,8 +101,8 @@ class ActivityDetailsPage extends StatelessWidget {
                         children: [
                           _buildMetricColumn(
                             'TIME',
-                            _formatDuration(activity.duration),
-                            'HOURS',
+                            activity.formattedDuration,
+                            ' ',
                           ),
                           _buildMetricColumn(
                             'DISTANCE',
@@ -150,37 +150,37 @@ class ActivityDetailsPage extends StatelessWidget {
   }
 
   Widget _buildMetricColumn(String label, String value, String unit) {
-    return Expanded(
-      child: Column(
-        children: [
-          const SizedBox(height: 10),
-          Text(
-            label,
-            style: const TextStyle(
-              color: CupertinoColors.systemGrey,
-              fontSize: 20,
-            ),
+  return Expanded(
+    child: Column(
+      children: [
+        const SizedBox(height: 10),
+        Text(
+          label,
+          style: const TextStyle(
+            color: CupertinoColors.systemGrey,
+            fontSize: 16, // Reduced font size
           ),
-          const SizedBox(height: 10),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 34,
-              fontWeight: FontWeight.bold,
-            ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 28, // Reduced font size
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 5),
-          Text(
-            unit,
-            style: const TextStyle(
-              color: CupertinoColors.systemGrey,
-              fontSize: 14,
-            ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          unit,
+          style: const TextStyle(
+            color: CupertinoColors.systemGrey,
+            fontSize: 12, // Reduced font size
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildMetricRow(String label, String value, String unit) {
     return Container(
@@ -225,13 +225,5 @@ class ActivityDetailsPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _formatDuration(int minutes) {
-    final hours = minutes ~/ 60;
-    final remainingMinutes = minutes % 60;
-    final seconds = 0;
-
-    return '${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 }

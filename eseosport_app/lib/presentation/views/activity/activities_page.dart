@@ -31,7 +31,14 @@ class ActivitiesPage extends StatelessWidget {
       builder: (BuildContext context) => CupertinoAlertDialog(
         title: const Text('Delete Activity'),
         content: const Text('Are you sure you want to delete this activity?'),
-        actions: <Widget>[
+        actions: <Widget>[CupertinoDialogAction(
+          isDefaultAction: true,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel', style: TextStyle(color: CupertinoColors.systemGrey)),
+
+        ),
           CupertinoDialogAction(
             isDestructiveAction: true,
             onPressed: () {
@@ -42,13 +49,7 @@ class ActivitiesPage extends StatelessWidget {
             },
             child: const Text('Delete'),
           ),
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Cancel'),
-          ),
+
         ],
       ),
     );
@@ -104,13 +105,13 @@ class ActivitiesPage extends StatelessWidget {
                                           width: 40,
                                           height: 40,
                                           decoration: BoxDecoration(
-                                            color: CupertinoColors.systemGrey4,
+                                            color: CupertinoColors.systemGrey6,
                                             shape: BoxShape.circle,
                                           ),
                                           child: Icon(
                                             _getActivityIcon(
                                                 activity.activityType),
-                                            color: CupertinoColors.black,
+                                            color: CupertinoColors.systemGrey,
                                           ),
                                         ),
                                         const SizedBox(width: 12),
@@ -119,7 +120,7 @@ class ActivitiesPage extends StatelessWidget {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'Activity ${activity.idActivity}',
+                                              activity.name,
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: 16,

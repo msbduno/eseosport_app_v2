@@ -64,6 +64,7 @@ class _RecordPageState extends State<RecordPage> {
   }
 
   void startRecording() {
+    final activityName = 'Activity ';
     setState(() {
       _isRecording = true;
       _currentActivity ??= Activity(
@@ -74,9 +75,11 @@ class _RecordPageState extends State<RecordPage> {
         elevation: 0.0,
         averageSpeed: 0.0,
         averageBPM: 0,
+        name: activityName, // Assurez-vous que le nom est défini ici
         user: UserModel(nom: "nom", prenom: "prenom", email: "email", password: "password"),
       );
     });
+
 
     _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
@@ -96,6 +99,7 @@ class _RecordPageState extends State<RecordPage> {
             averageSpeed: _liveDataVM.currentSpeed,
             averageBPM: _liveDataVM.currentBPM ?? 0,
             user: _currentActivity!.user,
+            name: _currentActivity!.name,
           );
         }
       });
@@ -114,6 +118,8 @@ class _RecordPageState extends State<RecordPage> {
         averageSpeed: _liveDataVM.currentSpeed,
         averageBPM: _liveDataVM.currentBPM ?? 0,
         user: _currentActivity!.user!,
+        name: _currentActivity!.name,
+
       );
       //await ActivityRepository.saveActivity(finalActivity);
     }
@@ -151,8 +157,18 @@ class _RecordPageState extends State<RecordPage> {
     if (_currentActivity != null) {
       Navigator.pushNamed(context, '/saveActivity', arguments: _currentActivity);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No activity to save')),
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: const Text('Error'),
+          content: const Text('No activity to save'),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
       );
     }
   }

@@ -17,7 +17,7 @@ class ProfilePage extends StatelessWidget {
                 content: const Text('Are you sure you want to log out?'),
                 actions: <Widget>[
                   CupertinoDialogAction(
-                    child: const Text('Cancel'),
+                    child: const Text('Cancel', style: TextStyle(color: CupertinoColors.systemGrey)),
                     onPressed: () => Navigator.of(context).pop(false),
                   ),
                   CupertinoDialogAction(
