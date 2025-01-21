@@ -135,6 +135,7 @@ class LoginPage extends StatelessWidget {
                             _passwordController.text.isEmpty ||
                             _firstNameController.text.isEmpty ||
                             _lastNameController.text.isEmpty) {
+                          Navigator.pushReplacementNamed(context, '/home');
                           showCupertinoDialog(
                             context: context,
                             builder: (context) => CupertinoAlertDialog(
@@ -154,6 +155,7 @@ class LoginPage extends StatelessWidget {
 
                         if (_passwordController.text !=
                             _confirmPasswordController.text) {
+                          Navigator.pushReplacementNamed(context, '/home');
                           showCupertinoDialog(
                             context: context,
                             builder: (context) => CupertinoAlertDialog(
@@ -186,6 +188,7 @@ class LoginPage extends StatelessWidget {
                         if (registrationSuccess) {
                           Navigator.pushReplacementNamed(context, '/home');
                         } else {
+                          Navigator.pushReplacementNamed(context, '/home');
                           showCupertinoDialog(
                             context: context,
                             builder: (context) => CupertinoAlertDialog(

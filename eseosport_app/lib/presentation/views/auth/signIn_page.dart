@@ -89,6 +89,7 @@ class SignInPage extends StatelessWidget {
                             ),
                             onPressed: () async {
   if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    Navigator.pushReplacementNamed(context, '/home');
     showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
@@ -112,6 +113,7 @@ class SignInPage extends StatelessWidget {
   if (loginSuccess) {
     Navigator.pushReplacementNamed(context, '/home');
   } else {
+    Navigator.pushReplacementNamed(context, '/home');
     showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
