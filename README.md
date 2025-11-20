@@ -1,5 +1,8 @@
 # ESEOSPORT
 
+<img width="1118" height="1451" alt="image" src="https://github.com/user-attachments/assets/2d4ed964-da00-4837-bef6-f76a0967b301" />
+
+
 ## Objectif
 ESEOSPORT est une application mobile développée avec Flutter.  
 Elle permet de récupérer des données via Bluetooth, de les afficher en temps réel et de gérer un historique.  
