@@ -19,6 +19,13 @@ Un backend Spring Boot peut être utilisé pour le stockage des activités et de
 
 ---
 
+
+---
+
+<img width="1118" height="1451" alt="image" src="https://github.com/user-attachments/assets/2d4ed964-da00-4837-bef6-f76a0967b301" />
+
+---
+`
 ## Architecture du projet
 
 ### Frontend (Flutter)
