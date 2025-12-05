@@ -22,7 +22,7 @@ Un backend Spring Boot peut être utilisé pour le stockage des activités et de
 <img width="1118" height="1451" alt="image" src="https://github.com/user-attachments/assets/2d4ed964-da00-4837-bef6-f76a0967b301" />
 
 ---
-`
+
 ## Architecture du projet
 
 ### Frontend (Flutter)
@@ -106,7 +106,6 @@ Configurer la base PostgreSQL si nécessaire.
 ## Bonnes pratiques
 - Architecture MVVM + BLoC  
 - Conventions de nommage Dart  
-- Tests unitaires, intégration et UI  
 - Gestion du code via Git (feat, fix, refactor)
 
 ---
@@ -116,7 +115,3 @@ Configurer la base PostgreSQL si nécessaire.
 - Script SQL disponible dans la documentation  
 - Diagramme de classes générable avec l’outil dcdg
 
----
-
-## Ajout d'images
-Placez vos images dans un dossier `/assets` ou `/docs` et ajoutez-les ainsi :
