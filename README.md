@@ -6,6 +6,14 @@ ESEOSPORT est une application mobile développée avec Flutter.
 Elle permet de récupérer des données via Bluetooth, de les afficher en temps réel et de gérer un historique.  
 Un backend Spring Boot peut être utilisé pour le stockage des activités et des statistiques.
 
+
+---
+## Vidéo
+
+https://github.com/user-attachments/assets/bd193751-e42b-4557-9eff-90c74d101a3e
+
+Dans cette vidéo, les données récupérées par les capteurs sont fictives, le but étant de montrer les fonctionnalités et le fonctionnement général de l’application.
+
 ---
 
 ## Technologies utilisées
